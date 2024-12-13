@@ -1,0 +1,171 @@
+.air-quality-monitoring {
+    background: #2A2A2A;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.air-quality-monitoring h2 {
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.air-quality-monitoring h2 .material-icons {
+    color: #4CAF50;
+}
+
+.monitoring-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.card-header .material-icons {
+    font-size: 2rem;
+    color: #4CAF50;
+}
+
+.gauge-circle {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.gauge-background {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #1E1E1E;
+    position: absolute;
+}
+
+.gauge-fill {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: absolute;
+    clip: rect(0, 200px, 200px, 100px);
+    background: conic-gradient(
+        from 0deg,
+        #4CAF50 0%,
+        #FFC107 50%,
+        #FF5252 100%
+    );
+    transition: transform 0.3s ease;
+}
+
+.gauge-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 160px;
+    height: 160px;
+    background: #2A2A2A;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.aqi-status {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    background: rgba(76, 175, 80, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.status-text {
+    color: #fff;
+    font-weight: 500;
+}
+
+/* Air Quality Details */
+.air-quality-details {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.detail-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.detail-item .material-icons {
+    color: #4CAF50;
+    font-size: 1.5rem;
+}
+
+.detail-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    color: #B0B0B0;
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+/* Status Colors */
+.good { background: #4CAF50; }
+.moderate { background: #FFC107; }
+.poor { background: #FF5252; }
+
+.aqi-value {
+    color: #4CAF50;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .air-quality-details {
+        grid-template-columns: 1fr;
+    }
+
+    .gauge-circle {
+        width: 160px;
+        height: 160px;
+    }
+
+    .gauge-center {
+        width: 120px;
+        height: 120px;
+    }
+}

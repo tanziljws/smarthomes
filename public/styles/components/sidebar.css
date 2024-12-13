@@ -1,0 +1,68 @@
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 250px;
+    background: var(--bg-gradient);
+    transition: var(--transition);
+    z-index: 1000;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 1px solid var(--border-color);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 15px;
+  }
+
+  .logo .material-icons {
+    font-size: 24px;
+    min-width: 24px;
+  }
+
+  .logo h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .nav-item, .sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: var(--transition);
+    margin-bottom: 8px;
+  }
+
+  .nav-item:hover, .nav-item.active,
+  .sidebar nav a:hover, .sidebar nav a.active {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .nav-item .material-icons {
+    font-size: 20px;
+  }
+
+  .burger-menu {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+  }
+
+  .burger-menu .material-icons {
+    color: var(--text-primary);
+    font-size: 24px;
+  }

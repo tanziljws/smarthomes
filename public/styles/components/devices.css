@@ -1,0 +1,691 @@
+/* Device Container */
+.device-container {
+    padding: 35px;
+    background: linear-gradient(165deg, #1a1a1a, #2d2d2d);
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    margin: 25px;
+}
+
+/* Header and Buttons */
+.action-buttons {
+    display: flex;
+    gap: 18px;
+    margin: 25px 0;
+}
+
+/* Button Styles */
+.btn-add-group,
+.btn-add-device,
+.btn-add-schedule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+/* Specific button colors and effects */
+.btn-add-group {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-add-device {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+}
+
+.btn-add-schedule {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+}
+
+/* Hover effects */
+.btn-add-group:hover,
+.btn-add-device:hover,
+.btn-add-schedule:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Active state */
+.btn-add-group:active,
+.btn-add-device:active,
+.btn-add-schedule:active {
+    transform: translateY(1px);
+}
+
+/* Control buttons (edit, delete, move) */
+.btn-edit,
+.btn-delete,
+.btn-move {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.btn-edit {
+    color: #64B5F6;
+}
+
+.btn-delete {
+    color: #EF5350;
+}
+
+.btn-move {
+    color: #FFB74D;
+}
+
+.btn-edit:hover,
+.btn-delete:hover,
+.btn-move:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Icon styling inside buttons */
+.material-icons {
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+/* Device control buttons */
+.device-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Modal buttons */
+.btn-save,
+.btn-cancel {
+    padding: 10px 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-cancel {
+    background: linear-gradient(135deg, #9e9e9e, #757575);
+    color: white;
+    box-shadow: 0 4px 15px rgba(158, 158, 158, 0.3);
+}
+
+.btn-save:hover,
+.btn-cancel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Device Groups */
+.device-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    margin: 25px 0;
+}
+
+.device-group {
+    background: linear-gradient(165deg, #2c2c2c, #333333);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.device-group:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Devices */
+.device-item {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 12px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.device-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(3px);
+}
+
+.device-name {
+    color: white;
+}
+
+/* Schedules */
+.schedules-section {
+    margin-top: 45px;
+    background: linear-gradient(165deg, #2c2c2c, #333333);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.schedule-item {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.schedule-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(3px);
+}
+
+.schedule-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.schedule-time {
+    font-family: monospace;
+    color: #4CAF50;
+}
+
+.schedule-days {
+    color: #888;
+}
+
+.schedule-action {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.schedule-action.on {
+    background: #4CAF50;
+    color: white;
+}
+
+.schedule-action.off {
+    background: #f44336;
+    color: white;
+}
+
+.days-selector {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.days-selector label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.no-schedules {
+    color: #888;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Modals */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #2a2a2a;
+    margin: 15% auto;
+    padding: 30px;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 500px;
+    color: white;
+    background: linear-gradient(165deg, #2a2a2a, #333333);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal h2 {
+    margin-top: 0;
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #ccc;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #4CAF50;
+    background: rgba(255, 255, 255, 0.12);
+    outline: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-save,
+.btn-cancel {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-save {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-cancel {
+    background-color: #666;
+    color: white;
+}
+
+/* Error message styles */
+.error-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #ff4444;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 12px;
+    z-index: 1001;
+    animation: fadeIn 0.3s, fadeOut 0.3s 4.7s;
+    font-weight: 500;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 65px;
+    height: 36px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 28px;
+    width: 28px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Success message styles */
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 12px;
+    z-index: 1001;
+    animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+    font-weight: 500;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Device Toggle Styling */
+.device-toggle {
+    position: relative;
+    display: inline-block;
+}
+
+.toggle-input {
+    display: none; /* Sembunyikan checkbox asli */
+}
+
+.toggle-input + label {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-input + label:before {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    background-color: white;
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+.toggle-input:checked + label {
+    background-color: #4CAF50;
+}
+
+.toggle-input:checked + label:before {
+    transform: translateX(30px);
+}
+
+.toggle-input:disabled + label {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Device Card Styling */
+.device {
+    background: #2a2a2a;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.device-name {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    margin-right: 15px;
+}
+
+.device-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-control {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-control:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+.btn-control .material-icons {
+    font-size: 20px;
+}
+
+/* Device Group Styling */
+.device-group {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+.group-header h3 {
+    color: #fff;
+    margin: 0;
+    font-size: 18px;
+}
+
+/* Animation untuk toggle */
+@keyframes toggleOn {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(30px); }
+}
+
+@keyframes toggleOff {
+    0% { transform: translateX(30px); }
+    100% { transform: translateX(0); }
+}
+
+/* Status indicator */
+.device-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 10px;
+}
+
+.status-on {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+}
+
+.status-off {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #F44336;
+}
+
+/* Hover effects */
+.device:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .device {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .device-name {
+        margin-bottom: 10px;
+    }
+
+    .device-controls {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+.device-controls,
+.schedule-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-control {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-edit {
+    background: rgba(33, 150, 243, 0.2);
+    color: #2196F3;
+}
+
+.btn-move {
+    background: rgba(255, 193, 7, 0.2);
+    color: #FFC107;
+}
+
+.btn-delete {
+    background: rgba(244, 67, 54, 0.2);
+    color: #F44336;
+}
+
+.btn-control:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+.btn-control:active {
+    transform: translateY(0);
+}
+
+.btn-control .material-icons {
+    font-size: 20px;
+}
+
+/* Styling untuk schedule items */
+.schedule-item {
+    background: #2a2a2a;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.schedule-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.schedule-time {
+    color: #4CAF50;
+    font-weight: 500;
+}
+
+.schedule-action.on {
+    color: #4CAF50;
+}
+
+.schedule-action.off {
+    color: #F44336;
+}

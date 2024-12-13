@@ -1,0 +1,31 @@
+{
+  "name": "smarthome-dashboard",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "gsap": "^3.12.5",
+    "johnny-five": "^2.1.0",
+    "mqtt": "^5.10.3",
+    "mysql2": "^3.11.5",
+    "node-fetch": "^3.3.2",
+    "node-schedule": "^2.1.1",
+    "socket.io": "^4.8.1"
+  },
+  "description": "",
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16"
+  },
+  "proxy": "https://api.bmkg.go.id"
+}

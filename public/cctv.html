@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCTV Management</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/base/styles.css">
+    <link rel="stylesheet" href="styles/components/sidebar.css">
+    <link rel="stylesheet" href="styles/components/cards.css">
+    <link rel="stylesheet" href="styles/components/buttons.css">
+    <link rel="stylesheet" href="styles/components/modals.css">
+    <link rel="stylesheet" href="styles/utils/responsive.css">
+    <link rel="stylesheet" href="styles/components/cctv.css">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <span class="material-icons">home</span>
+            <h2>SmartHome</h2>
+        </div>
+        <nav>
+            <a href="index.html">
+                <span class="material-icons">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="cctv.html" class="active">
+                <span class="material-icons">videocam</span>
+                <span>CCTV</span>
+            </a>
+            <a href="devices.html">
+                <span class="material-icons">devices</span>
+                <span>Devices</span>
+            </a>
+            <a href="#">
+                <span class="material-icons">analytics</span>
+                <span>Analytics</span>
+            </a>
+            <a href="#">
+                <span class="material-icons">settings</span>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="cctv-header">
+            <div class="header-left">
+                <h1>CCTV Management</h1>
+                <p class="header-subtitle">Monitor and manage your security cameras</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn-select" onclick="app.toggleSelectMode()">
+                    <span class="material-icons">checklist</span>
+                    <span>Select</span>
+                </button>
+                <button class="btn-add-group" onclick="app.openAddGroupModal()">
+                    <span class="material-icons">add_circle</span>
+                    <span>Add Group</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CCTV Groups Container -->
+        <div id="cctvGroups" class="cctv-groups">
+            <!-- Example of a CCTV group -->
+            <div class="cctv-group">
+                <div class="group-header">
+                    <div class="group-info">
+                        <h3>Kamar Tanzil</h3>
+                        <span class="camera-count">1 Camera</span>
+                    </div>
+                    <div class="group-actions">
+                        <button class="btn-icon" title="Edit Group">
+                            <span class="material-icons">edit</span>
+                        </button>
+                        <button class="btn-icon" title="Delete Group">
+                            <span class="material-icons">delete</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="cctv-grid">
+                    <div class="cctv-card">
+                        <div class="cctv-preview">
+                            <img src="path_to_feed.jpg" alt="CCTV Feed">
+                            <div class="cctv-status online"></div>
+                        </div>
+                        <div class="cctv-info">
+                            <h4>Camera 1</h4>
+                            <p>Status: Online</p>
+                        </div>
+                        <div class="cctv-actions">
+                            <button class="btn-icon" title="View">
+                                <span class="material-icons">visibility</span>
+                            </button>
+                            <button class="btn-icon" title="Settings">
+                                <span class="material-icons">settings</span>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn-add-cctv" onclick="app.openAddCctvModal()">
+                        <span class="material-icons">add_circle_outline</span>
+                        <span>Add Camera</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div id="addGroupModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add New Group</h2>
+                    <button class="btn-close" onclick="app.closeAddGroupModal()">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <form id="addGroupForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="groupName">Group Name</label>
+                        <input type="text" id="groupName" class="form-input" placeholder="Enter group name" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="app.closeAddGroupModal()">Cancel</button>
+                        <button type="submit" class="btn-save">Create Group</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add CCTV Modal -->
+        <div id="addCctvModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add New Camera</h2>
+                    <button class="btn-close" onclick="app.closeAddCctvModal()">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <form id="addCctvForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="cctvName">Camera Name</label>
+                        <input type="text" id="cctvName" class="form-input" placeholder="Enter camera name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cctvUrl">Stream URL</label>
+                        <input type="text" id="cctvUrl" class="form-input" placeholder="Enter stream URL" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="app.closeAddCctvModal()">Cancel</button>
+                        <button type="submit" class="btn-save">Add Camera</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- View CCTV Modal -->
+        <div id="viewCctvModal" class="modal">
+            <div class="modal-content modal-lg">
+                <div class="modal-header">
+                    <h2>Camera View</h2>
+                    <button class="btn-close" onclick="app.closeViewCctvModal()">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="cctv-stream">
+                        <!-- Stream content will be populated by JavaScript -->
+                    </div>
+                    <div class="stream-controls">
+                        <button class="btn-icon" title="Play/Pause">
+                            <span class="material-icons">play_arrow</span>
+                        </button>
+                        <button class="btn-icon" title="Full Screen">
+                            <span class="material-icons">fullscreen</span>
+                        </button>
+                        <button class="btn-icon" title="Settings">
+                            <span class="material-icons">settings</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Edit Group -->
+        <div id="editGroupModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Group</h2>
+                    <button class="btn-close" onclick="document.getElementById('editGroupModal').style.display='none'">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <form id="editGroupForm">
+                    <div class="form-group">
+                        <label for="editGroupName">Group Name</label>
+                        <input type="text" id="editGroupName" name="editGroupName" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" onclick="document.getElementById('editGroupModal').style.display='none'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-save">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="cctv.js"></script>
+</body>
+</html>

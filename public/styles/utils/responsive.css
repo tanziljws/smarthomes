@@ -1,0 +1,67 @@
+@media (max-width: 768px) {
+    .sidebar {
+      transform: translateX(-100%);
+      width: 250px;
+    }
+
+    .sidebar.active {
+      transform: translateX(0);
+      box-shadow: var(--shadow-md);
+    }
+
+    .main-content {
+      margin-left: 0;
+      padding-top: 70px;
+    }
+
+    .burger-menu {
+      display: block;
+    }
+
+    .status-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .device-list {
+      grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+      width: 95%;
+      margin: 20px;
+      padding: 15px;
+    }
+
+    .header-actions {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .sidebar {
+      width: 64px;
+    }
+
+    .sidebar:hover {
+      width: 250px;
+    }
+
+    .sidebar:hover + .main-content {
+      margin-left: 250px;
+    }
+
+    .sidebar .material-icons {
+      font-size: 20px;
+    }
+
+    .sidebar nav a span:not(.material-icons),
+    .sidebar .logo h2 {
+      display: none;
+    }
+
+    .sidebar:hover nav a span:not(.material-icons),
+    .sidebar:hover .logo h2 {
+      display: inline-block;
+    }
+  }

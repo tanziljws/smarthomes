@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Management - Smart Home</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles/base/styles.css">
+    <link rel="stylesheet" href="styles/components/sidebar.css">
+    <link rel="stylesheet" href="styles/components/cards.css">
+    <link rel="stylesheet" href="styles/components/buttons.css">
+    <link rel="stylesheet" href="styles/components/modals.css">
+    <link rel="stylesheet" href="styles/components/devices.css">
+    <link rel="stylesheet" href="styles/utils/responsive.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="material-icons">home</span>
+                <h2>SmartHome</h2>
+            </div>
+            <nav>
+                <a href="index.html">
+                    <span class="material-icons">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="cctv.html">
+                    <span class="material-icons">videocam</span>
+                    <span>CCTV</span>
+                </a>
+                <a href="devices.html" class="active">
+                    <span class="material-icons">devices</span>
+                    <span>Devices</span>
+                </a>
+                <a href="#">
+                    <span class="material-icons">analytics</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="#">
+                    <span class="material-icons">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="device-container">
+                <h2>Device Management</h2>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-add-group">
+                        <span class="material-icons">add</span>
+                        Add Group
+                    </button>
+                    <button class="btn-add-device">
+                        <span class="material-icons">devices_other</span>
+                        Add Device
+                    </button>
+                </div>
+
+                <!-- Device Groups -->
+                <div class="device-groups">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
+                <!-- Schedules Section -->
+                <div class="schedules-section">
+                    <h3>Schedules</h3>
+                    <button class="btn-add-schedule">
+                        <span class="material-icons">schedule</span>
+                        Add Schedule
+                    </button>
+                    <div class="schedules-list">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="devices-section">
+                    <div id="ungrouped-devices" class="devices-container">
+                        <!-- Ungrouped devices will be rendered here -->
+                    </div>
+
+                    <div id="grouped-devices">
+                        <!-- Group containers will be dynamically added here -->
+                        <div id="group-{groupId}" class="group-container">
+                            <div class="devices-container">
+                                <!-- Grouped devices will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Group Modal -->
+<!-- Di dalam devices.html, pastikan modal memiliki ID yang benar -->
+<div id="addGroupModal" class="modal">
+    <div class="modal-content">
+        <h2>Add Device Group</h2>
+        <form id="addGroupForm">
+            <div class="form-group">
+                <label for="groupName">Group Name</label>
+                <input type="text" id="groupName" required>
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-save">Create Group</button>
+                <button type="button" class="btn-cancel" onclick="hideModal('addGroupModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+ <!-- Di dalam devices.html, pastikan ada modal add device -->
+<div id="addDeviceModal" class="modal">
+    <div class="modal-content">
+        <h2>Add Device</h2>
+        <form id="addDeviceForm">
+            <div class="form-group">
+                <label for="deviceName">Device Name</label>
+                <input type="text" id="deviceName" required>
+            </div>
+            <div class="form-group">
+                <label for="relayNumber">Relay Number</label>
+                <select id="relayNumber" required>
+                    <option value="1">Relay 1</option>
+                    <option value="2">Relay 2</option>
+                    <option value="3">Relay 3</option>
+                    <option value="4">Relay 4</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="deviceGroup">Group</label>
+                <select id="deviceGroup">
+                    <option value="">No Group</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-save">Add Device</button>
+                <button type="button" class="btn-cancel" onclick="hideModal('addDeviceModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <!-- Add Schedule Modal -->
+    <div id="addScheduleModal" class="modal">
+        <div class="modal-content">
+            <h2>Add Schedule</h2>
+            <form id="addScheduleForm">
+                <div class="form-group">
+                    <label for="scheduleDevice">Device</label>
+                    <select id="scheduleDevice" required>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="scheduleTime">Time</label>
+                    <input type="time" id="scheduleTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="scheduleAction">Action</label>
+                    <select id="scheduleAction" required>
+                        <option value="ON">Turn ON</option>
+                        <option value="OFF">Turn OFF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Days</label>
+                    <div class="days-selector">
+                        <label><input type="checkbox" value="1"> Mon</label>
+                        <label><input type="checkbox" value="2"> Tue</label>
+                        <label><input type="checkbox" value="3"> Wed</label>
+                        <label><input type="checkbox" value="4"> Thu</label>
+                        <label><input type="checkbox" value="5"> Fri</label>
+                        <label><input type="checkbox" value="6"> Sat</label>
+                        <label><input type="checkbox" value="0"> Sun</label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-save">Add Schedule</button>
+                    <button type="button" class="btn-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Move Device Modal -->
+    <div id="moveDeviceModal" class="modal">
+        <div class="modal-content">
+            <h2>Move Device</h2>
+            <form id="moveDeviceForm">
+                <div class="form-group">
+                    <label for="moveToGroup">Select Group</label>
+                    <select id="moveToGroup" required>
+                        <option value="">No Group</option>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-save">Move</button>
+                    <button type="button" class="btn-cancel" onclick="hideModal('moveDeviceModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Group Modal -->
+    <div id="editGroupModal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Group</h2>
+            <form id="editGroupForm">
+                <div class="form-group">
+                    <label for="editGroupName">Group Name</label>
+                    <input type="text" id="editGroupName" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-save">Save Changes</button>
+                    <button type="button" class="btn-cancel" onclick="hideModal('editGroupModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Device Modal -->
+    <div id="editDeviceModal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Device</h2>
+            <div class="form-group">
+                <label for="editDeviceName">Device Name</label>
+                <input type="text" id="editDeviceName" required>
+            </div>
+            <div class="form-group">
+                <label for="editDeviceStatus">Status</label>
+                <select id="editDeviceStatus" required>
+                    <option value="ON">ON</option>
+                    <option value="OFF">OFF</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="editDeviceGroup">Group</label>
+                <select id="editDeviceGroup">
+                    <!-- Populate with groups if needed -->
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-save" onclick="saveDeviceChanges()">Save Changes</button>
+                <button type="button" class="btn-cancel" onclick="hideModal('editDeviceModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Schedule Modal -->
+    <div id="editScheduleModal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Schedule</h2>
+            <form id="editScheduleForm">
+                <label for="editScheduleDevice">Device</label>
+                <select id="editScheduleDevice" required>
+                    <option value="">Select Device</option>
+                    <!-- Options will be populated here -->
+                </select>
+
+                <label for="editScheduleTime">Time</label>
+                <input type="time" id="editScheduleTime" required>
+
+                <label for="editScheduleAction">Action</label>
+                <select id="editScheduleAction" required>
+                    <option value="ON">Turn ON</option>
+                    <option value="OFF">Turn OFF</option>
+                </select>
+
+                <label>Days</label>
+                <div class="days-selector">
+                    <label><input type="checkbox" name="editDays" value="0"> Mon</label>
+                    <label><input type="checkbox" name="editDays" value="1"> Tue</label>
+                    <label><input type="checkbox" name="editDays" value="2"> Wed</label>
+                    <label><input type="checkbox" name="editDays" value="3"> Thu</label>
+                    <label><input type="checkbox" name="editDays" value="4"> Fri</label>
+                    <label><input type="checkbox" name="editDays" value="5"> Sat</label>
+                    <label><input type="checkbox" name="editDays" value="6"> Sun</label>
+                </div>
+
+                <button type="submit">Save Changes</button>
+                <button type="button" onclick="hideModal('editScheduleModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="devices.js"></script>
+</body>
+</html>

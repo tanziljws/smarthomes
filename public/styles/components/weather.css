@@ -1,0 +1,161 @@
+.weather-monitoring {
+    background: linear-gradient(145deg, #2c3e50, #3498db);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    color: #fff;
+}
+
+.weather-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+}
+
+.main-weather {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.weather-icon-large {
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.weather-icon-large .material-icons {
+    font-size: 4rem;
+    color: #FFF;
+}
+
+.temp-large {
+    font-size: 4rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+.weather-desc {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
+.location, .time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0;
+}
+
+.weather-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.detail-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.detail-card:hover {
+    transform: translateY(-5px);
+}
+
+.detail-icon {
+    background: rgba(255, 255, 255, 0.2);
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.detail-icon .material-icons {
+    font-size: 1.8rem;
+}
+
+.detail-info {
+    flex: 1;
+}
+
+.detail-info h3 {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+}
+
+.detail-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: #3498db;
+    transition: width 0.3s ease;
+}
+
+.wind-direction {
+    margin-top: 0.5rem;
+}
+
+.wind-direction .material-icons {
+    transition: transform 0.3s ease;
+}
+
+/* Custom colors for different cards */
+.humidity .detail-icon { background: rgba(52, 152, 219, 0.2); }
+.humidity .progress { background: #3498db; }
+
+.wind .detail-icon { background: rgba(46, 204, 113, 0.2); }
+.wind .detail-value { color: #2ecc71; }
+
+.visibility .detail-icon { background: rgba(241, 196, 15, 0.2); }
+.visibility .progress { background: #f1c40f; }
+
+.cloud .detail-icon { background: rgba(149, 165, 166, 0.2); }
+.cloud .progress { background: #95a5a6; }
+
+@media (max-width: 1024px) {
+    .weather-container {
+        grid-template-columns: 1fr;
+    }
+
+    .weather-details-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .weather-details-grid {
+        grid-template-columns: 1fr;
+    }
+} 
