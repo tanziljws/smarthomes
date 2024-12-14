@@ -190,11 +190,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <p class="cctv-count">${group.cctvs ? group.cctvs.length : 0} cameras connected</p>
                             </div>
                             <div class="group-actions">
-                                <button class="btn-add-cctv" onclick="app.openAddCctvModal(${group.id}, event)">
+                                <button class="btn-add-cctv" onclick="app.openAddCctvModal('${group.id}')">
                                     <span class="material-icons">add_circle</span>
                                     ADD CCTV
                                 </button>
-                                <button class="btn-view" onclick="app.showGroupDetail(${group.id}, event)">
+                                <button class="btn-view" onclick="app.showGroupDetail('${group.id}')">
                                     <span class="material-icons">visibility</span>
                                     VIEW
                                 </button>
@@ -205,42 +205,52 @@ document.addEventListener('DOMContentLoaded', () => {
             `).join('');
         },
 
-        showGroupDetail(groupId) {
-            fetch(`/cctv/groups/${groupId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const modalContent = `
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h2>${data.name}</h2>
-                                <button class="btn-close" onclick="app.closeModal()">
-                                    <span class="material-icons">close</span>
-                                </button>
-                            </div>
-                            <div class="cctv-streams">
-                                ${data.cctvs.map(cctv => `
+        async showGroupDetail(groupId) {
+            if (!groupId) {
+                console.error('No group ID provided');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/cctv/groups/${groupId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch group details');
+                }
+
+                const data = await response.json();
+                
+                const viewModal = document.getElementById('viewCctvModal');
+                viewModal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>${data.name}</h2>
+                            <button class="btn-close" onclick="app.closeModal()">
+                                <span class="material-icons">close</span>
+                            </button>
+                        </div>
+                        <div class="cctv-streams">
+                            ${data.cctvs && data.cctvs.length > 0 ? 
+                                data.cctvs.map(cctv => `
                                     <div class="cctv-stream-container">
                                         <div class="stream-header">${cctv.name}</div>
                                         <div class="stream-wrapper" onclick="app.showFullScreen('${cctv.id}', '${cctv.stream_url}', '${cctv.name}')">
                                             <img src="${cctv.stream_url}" alt="${cctv.name}">
                                         </div>
-                                        <button class="btn-delete" onclick="event.stopPropagation(); app.deleteCctv(${cctv.id}, event)">
+                                        <button class="btn-delete" onclick="app.deleteCctv('${cctv.id}')">
                                             <span class="material-icons">delete</span>
                                         </button>
                                     </div>
-                                `).join('')}
-                            </div>
+                                `).join('') : 
+                                '<div class="no-cctv">No CCTVs in this group</div>'
+                            }
                         </div>
-                    `;
-
-                    const viewModal = document.getElementById('viewCctvModal');
-                    viewModal.innerHTML = modalContent;
-                    viewModal.style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to load CCTV group details');
-                });
+                    </div>
+                `;
+                viewModal.style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to load CCTV group details');
+            }
         },
 
         showFullScreen(cctvId, streamUrl, cctvName) {
@@ -303,8 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
 
-        async deleteCctv(cctvId, event) {
-            if (event) event.stopPropagation();
+        async deleteCctv(cctvId) {
             if (confirm('Are you sure you want to delete this CCTV?')) {
                 try {
                     const response = await fetch(`/cctv/${cctvId}`, {
@@ -459,9 +468,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.getElementById('addCctvForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const groupId = addCctvModal.dataset.groupId;
-                const cctvName = document.getElementById('cctvName').value;
-                const streamUrl = document.getElementById('cctvUrl').value;
+                
+                const modal = document.getElementById('addCctvModal');
+                const groupId = modal.dataset.groupId;
+                const cctvName = document.getElementById('cctvName').value.trim();
+                const streamUrl = document.getElementById('cctvUrl').value.trim();
+
+                if (!groupId) {
+                    alert('Invalid group selection');
+                    return;
+                }
+
+                if (!cctvName || !streamUrl) {
+                    alert('Please fill in all fields');
+                    return;
+                }
 
                 try {
                     const response = await fetch('/cctv/add', {
@@ -476,17 +497,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         }),
                     });
 
-                    if (response.ok) {
-                        addCctvModal.style.display = 'none';
-                        document.getElementById('cctvName').value = '';
-                        document.getElementById('cctvUrl').value = '';
-                        await this.showGroupDetail(groupId);
-                    } else {
-                        alert('Failed to add CCTV');
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.message || 'Failed to add CCTV');
                     }
+
+                    // Close modal and refresh data
+                    this.closeAddCctvModal();
+                    await this.fetchGroups();
+                    await this.showGroupDetail(groupId);
                 } catch (error) {
                     console.error('Error adding CCTV:', error);
-                    alert('Error adding CCTV');
+                    alert(error.message || 'Error adding CCTV');
                 }
             });
 
@@ -528,10 +550,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
 
-        openAddCctvModal() {
+        openAddCctvModal(groupId) {
+            if (!groupId) {
+                console.error('No group ID provided');
+                return;
+            }
+            
             const modal = document.getElementById('addCctvModal');
             if (modal) {
-                modal.style.display = 'flex';
+                modal.dataset.groupId = groupId;
+                modal.style.display = 'block';
+                
+                // Reset form
+                document.getElementById('addCctvForm').reset();
             }
         }
     };

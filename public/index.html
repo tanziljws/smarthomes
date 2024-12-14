@@ -9,13 +9,21 @@
 <link rel="stylesheet" href="styles/components/cards.css">
 <link rel="stylesheet" href="styles/components/buttons.css">
 <link rel="stylesheet" href="styles/components/modals.css">
+<link rel="stylesheet" href="styles/components/gauge.css">
+<link rel="stylesheet" href="styles/components/alerts.css">
+<link rel="stylesheet" href="styles/components/historical.css">
+<link rel="stylesheet" href="styles/components/settings.css">
 <link rel="stylesheet" href="styles/utils/responsive.css">
-<link rel="stylesheet" href="styles/components/airquality.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;,">
 </head>
 <body>
+  <button class="menu-toggle">
+    <span class="material-icons">menu</span>
+  </button>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
   <div class="container">
       <!-- Sidebar -->
       <aside class="sidebar">
@@ -24,7 +32,7 @@
             <h2>SmartHome</h2>
         </div>
         <nav>
-            <a href="index.html">
+            <a href="index.html" class="active">
                 <span class="material-icons">dashboard</span>
                 <span>Dashboard</span>
             </a>
@@ -32,15 +40,11 @@
                 <span class="material-icons">videocam</span>
                 <span>CCTV</span>
             </a>
-            <a href="devices.html" class="active">
+            <a href="devices.html">
                 <span class="material-icons">devices</span>
                 <span>Devices</span>
             </a>
-            <a href="#">
-                <span class="material-icons">analytics</span>
-                <span>Analytics</span>
-            </a>
-            <a href="#">
+            <a href="#" id="showSettings">
                 <span class="material-icons">settings</span>
                 <span>Settings</span>
             </a>
@@ -50,139 +54,109 @@
     <main class="main-content">
       <header>
         <h1>Hey, User! Welcome to your Smart Home Dashboard</h1>
+        <div class="header-actions">
+            <button id="toggleTheme" class="btn-icon">
+                <span class="material-icons">dark_mode</span>
+            </button>
+            <button id="showNotifications" class="btn-icon">
+                <span class="material-icons">notifications</span>
+                <span class="notification-badge">0</span>
+            </button>
+        </div>
       </header>
 
-      <div class="status-cards">
-        <!-- Temperature Card -->
-        <div class="card temperature">
-            <div class="card-header">Temperature</div>
-            <div class="meter-container temperature">
-                <div class="meter-circle">
-                    <div class="gauge-arc"></div>
-                    <div class="value-container">
-                        <span class="meter-value">76.8</span>
-                    </div>
-                    <div class="range-labels">
-                        <span class="min-value">-30</span>
-                        <span class="thermometer-icon">
-                            <i class="fas fa-thermometer-half"></i>
-                        </span>
-                        <span class="max-value">120</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <div class="dashboard-grid">
+          <!-- Temperature Gauge -->
+          <div class="metric-card" data-gauge-type="temperature" 
+               data-min="0" data-max="50" 
+               data-start-angle="-150" data-end-angle="150">
+              <div class="metric-header">
+                  <h3>Temperature</h3>
+                  <span class="icon">🌡️</span>
+              </div>
+              <div class="gauge-container">
+                  <div class="gauge">
+                      <div class="gauge-ring"></div>
+                      <div class="gauge-scale"></div>
+                      <div class="gauge-center">
+                          <div class="gauge-value">--°C</div>
+                          <div class="status-indicator">--</div>
+                      </div>
+                      <div class="gauge-pointer">
+                          <div class="pointer-stem"></div>
+                          <div class="pointer-head"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="range-indicators"></div>
+          </div>
 
-        <!-- Humidity Card -->
-        <div class="card humidity">
-            <div class="card-header">Humidity</div>
-            <div class="meter-container humidity">
-                <div class="meter-circle">
-                    <div class="wave-container">
-                        <svg class="wave-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            <defs>
-                                <clipPath id="circleClip">
-                                    <circle cx="50" cy="50" r="50"/>
-                                </clipPath>
-                            </defs>
-                            <g clip-path="url(#circleClip)">
-                                <!-- Wave 1 -->
-                                <path class="wave" d="M 0,50
-                                    C 20,45 40,55 60,50
-                                    C 80,45 100,55 120,50
-                                    L 120,100
-                                    L 0,100 Z">
-                                    <animate
-                                        attributeName="d"
-                                        dur="5s"
-                                        repeatCount="indefinite"
-                                        values="
-                                            M 0,50 C 20,45 40,55 60,50 C 80,45 100,55 120,50 L 120,100 L 0,100 Z;
-                                            M 0,50 C 20,55 40,45 60,50 C 80,55 100,45 120,50 L 120,100 L 0,100 Z;
-                                            M 0,50 C 20,45 40,55 60,50 C 80,45 100,55 120,50 L 120,100 L 0,100 Z"
-                                    />
-                                </path>
-                                <!-- Wave 2 -->
-                                <path class="wave" d="M 0,55
-                                    C 20,50 40,60 60,55
-                                    C 80,50 100,60 120,55
-                                    L 120,100
-                                    L 0,100 Z"
-                                    style="opacity: 0.5">
-                                    <animate
-                                        attributeName="d"
-                                        dur="7s"
-                                        repeatCount="indefinite"
-                                        values="
-                                            M 0,55 C 20,50 40,60 60,55 C 80,50 100,60 120,55 L 120,100 L 0,100 Z;
-                                            M 0,55 C 20,60 40,50 60,55 C 80,60 100,50 120,55 L 120,100 L 0,100 Z;
-                                            M 0,55 C 20,50 40,60 60,55 C 80,50 100,60 120,55 L 120,100 L 0,100 Z"
-                                    />
-                                </path>
-                            </g>
-                        </svg>
-                    </div>
-                    <div class="value-container">
-                        <span class="meter-value">28.6%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+          <!-- Humidity Gauge -->
+          <div class="metric-card" data-gauge-type="humidity"
+               data-min="0" data-max="100"
+               data-start-angle="-150" data-end-angle="150">
+              <div class="metric-header">
+                  <h3>Humidity</h3>
+                  <span class="icon">💧</span>
+              </div>
+              <div class="gauge-container">
+                  <div class="gauge">
+                      <div class="gauge-ring"></div>
+                      <div class="gauge-scale"></div>
+                      <div class="gauge-center">
+                          <div class="gauge-value">--%</div>
+                          <div class="status-indicator">--</div>
+                      </div>
+                      <div class="gauge-pointer">
+                          <div class="pointer-stem"></div>
+                          <div class="pointer-head"></div>
+                      </div>
+                  </div>
+              </div>
+              <div class="range-indicators"></div>
+          </div>
       </div>
 
-      <div class="air-quality-monitoring">
-          <h2>
-              <span class="material-icons">air</span>
-              Air Quality Monitoring
-          </h2>
+      <!-- Historical Data Section -->
+      <div class="historical-data">
+          <h2>Historical Data</h2>
+          <div class="chart-controls">
+              <select id="timeRange">
+                  <option value="1">Last Hour</option>
+                  <option value="24">Last 24 Hours</option>
+                  <option value="168">Last Week</option>
+              </select>
+              <button class="btn" onclick="dashboard.historicalData.exportData('csv')">
+                  <span class="material-icons">download</span>
+                  Export CSV
+              </button>
+          </div>
+          <div class="chart-container">
+              <canvas id="temperatureChart"></canvas>
+          </div>
+          <div class="chart-container">
+              <canvas id="humidityChart"></canvas>
+          </div>
+      </div>
 
-          <div class="monitoring-grid">
-              <!-- Air Quality Card -->
-              <div class="monitoring-card air-quality">
-                  <div class="card-header">
-                      <span class="material-icons">air_quality</span>
-                      <h3>Air Quality Index</h3>
-                  </div>
-                  <div class="readings-container">
-                      <div class="reading">
-                          <div class="gauge-circle">
-                              <div class="gauge-background"></div>
-                              <div class="gauge-fill" id="aqiGauge"></div>
-                              <div class="gauge-center">
-                                  <span class="reading-value aqi-value" id="aqiNumber">50</span>
-                                  <span class="reading-label" id="aqiValue">Good</span>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="aqi-status" id="aqiStatus">
-                      <div class="status-indicator good"></div>
-                      <span class="status-text">Air Quality is Good</span>
-                  </div>
+      <!-- Air Quality Section -->
+      <div class="air-quality">
+          <!-- ... air quality content ... -->
+      </div>
 
-                  <!-- Additional Air Quality Details -->
-                  <div class="air-quality-details">
-                      <div class="detail-item">
-                          <span class="material-icons">opacity</span>
-                          <div class="detail-info">
-                              <span class="detail-label">CO2 Level</span>
-                              <span class="detail-value" id="co2Level">400 ppm</span>
-                          </div>
-                      </div>
-                      <div class="detail-item">
-                          <span class="material-icons">grain</span>
-                          <div class="detail-info">
-                              <span class="detail-label">PM2.5</span>
-                              <span class="detail-value" id="pm25Level">12 µg/m³</span>
-                          </div>
-                      </div>
-                      <div class="detail-item">
-                          <span class="material-icons">air</span>
-                          <div class="detail-info">
-                              <span class="detail-label">TVOC</span>
-                              <span class="detail-value" id="tvocLevel">0.5 mg/m³</span>
-                          </div>
-                      </div>
+
+          </div>
+
+          <!-- Humidity Card -->
+          <div class="sensor-monitoring-card">
+              <div class="sensor-header">
+                  <h3>Humidity</h3>
+                  <div class="current-value">--%</div>
+              </div>
+              <div class="humidity-circle">
+                  <div class="water-waves">
+                      <div class="wave wave1"></div>
+                      <div class="wave wave2"></div>
                   </div>
               </div>
           </div>
@@ -256,8 +230,24 @@
 
 
     <aside class="right-sidebar">
-        <h2>Notifications</h2>
-        <p>No new notifications</p>
+        <div class="notifications-header">
+            <div class="notifications-title-area">
+                <h2>Notifications</h2>
+                <button class="notifications-close">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="notifications-tabs">
+                <button class="tab-button active" data-tab="recent">Recent</button>
+                <button class="tab-button" data-tab="history">History</button>
+            </div>
+            <button class="clear-notifications" onclick="notificationManager.clearAllNotifications()">
+                <span class="material-icons">clear_all</span>
+            </button>
+        </div>
+        <div class="alerts-container">
+            <!-- Notifications will be inserted here -->
+        </div>
         <button id="toggleDarkMode" class="btn-primary">Toggle Dark Mode</button>
       </aside>
     </div>
@@ -266,6 +256,20 @@
 
 
   <script src="/socket.io/socket.io.js"></script>
+  <script src="config/gaugeConfig.js"></script>
+  <script src="components/historicalData.js"></script>
+  <script src="components/notifications.js"></script>
+  <script src="components/settings.js"></script>
+  <script src="scripts/sidebar.js"></script>
   <script src="script.js"></script>
+  <script>
+    // Initialize notification manager
+    const notificationManager = new NotificationManager();
+    
+    // Update clear notifications button
+    document.querySelector('.notifications-header button').onclick = () => {
+        notificationManager.clearAllNotifications();
+    };
+  </script>
 </body>
 </html>

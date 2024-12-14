@@ -1,11 +1,13 @@
 /* Card Base */
 .card {
-  background: #1E1E1E;
+  background: rgba(30, 30, 30, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   border-radius: 15px;
   padding: 1.5rem;
   position: relative;
   min-height: 200px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card::before {
@@ -67,15 +69,23 @@
 
 /* Device Cards */
 .device-card {
-  background: var(--bg-gradient);
-  border-radius: var(--card-radius);
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: relative;
+  background: #1E1E1E;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.device-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(45deg, #4CAF50, #2196F3, #9C27B0);
+  border-radius: 17px;
+  z-index: -1;
+  opacity: 0.5;
 }
 
 .device-info {
@@ -388,4 +398,30 @@
   .meter-value {
     font-size: 2rem;
   }
+}
+
+/* Add at the end of the file */
+.loading-indicator {
+    width: 100%;
+    height: 4px;
+    background: #2a2a2a;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.loading-indicator::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #4CAF50, transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
 }

@@ -2,20 +2,46 @@
     .sidebar {
       transform: translateX(-100%);
       width: 250px;
+      position: fixed;
+      z-index: 1000;
     }
 
     .sidebar.active {
       transform: translateX(0);
-      box-shadow: var(--shadow-md);
-    }
-
-    .main-content {
-      margin-left: 0;
-      padding-top: 70px;
     }
 
     .burger-menu {
       display: block;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .sidebar-overlay.active {
+      display: block;
+    }
+
+    .main-content {
+      margin-left: 0;
+      padding: 20px;
+      padding-top: 70px;
     }
 
     .status-cards {
@@ -39,12 +65,22 @@
   }
 
   @media (min-width: 769px) {
+    .burger-menu {
+      display: none;
+    }
+
     .sidebar {
+      transform: translateX(0);
       width: 64px;
     }
 
     .sidebar:hover {
       width: 250px;
+    }
+
+    .main-content {
+      margin-left: 64px;
+      transition: margin-left 0.3s ease;
     }
 
     .sidebar:hover + .main-content {

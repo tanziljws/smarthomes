@@ -50,29 +50,23 @@ const deleteSchedule = async (req, res) => {
 
 const updateSchedule = async (req, res) => {
     const scheduleId = req.params.id;
-    const { device_id, time, action, days } = req.body;
-
-    console.log('Updating schedule with values:', { device_id, time, action, days });
-
-    const validActions = ['ON', 'OFF'];
-    if (!validActions.includes(action)) {
-        return res.status(400).json({ error: 'Invalid action value' });
-    }
+    const scheduleData = req.body;
 
     try {
-        const [result] = await db.query(
-            'UPDATE schedules SET device_id = ?, time = ?, action = ?, days = ? WHERE id = ?',
-            [device_id, time, action, days, scheduleId]
-        );
+        console.log('Updating schedule:', { scheduleId, scheduleData });
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: 'Schedule not found' });
+        // Validasi input
+        if (!scheduleData.device_id || !scheduleData.time || !scheduleData.action || !scheduleData.days) {
+            return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        res.json({ success: true, message: 'Schedule updated successfully' });
-    } catch (error) {
-        console.error('Error updating schedule:', error);
-        res.status(500).json({ error: 'Database error: ' + error.message });
+        const updatedSchedule = await scheduleService.updateSchedule(scheduleId, scheduleData);
+        
+        console.log('Schedule updated successfully:', updatedSchedule);
+        res.json(updatedSchedule);
+    } catch (err) {
+        console.error('Error in updateSchedule controller:', err);
+        res.status(500).json({ error: err.message });
     }
 };
 

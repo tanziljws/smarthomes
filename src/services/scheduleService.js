@@ -91,6 +91,43 @@ class ScheduleService {
             this.jobs.delete(scheduleId);
         }
     }
+
+    async updateSchedule(scheduleId, scheduleData) {
+        try {
+            // Update di database
+            await db.query(
+                'UPDATE schedules SET device_id = ?, time = ?, action = ?, days = ? WHERE id = ?',
+                [scheduleData.device_id, scheduleData.time, scheduleData.action, scheduleData.days, scheduleId]
+            );
+
+            // Ambil data schedule yang sudah diupdate beserta relay number
+            const [updatedSchedule] = await db.query(`
+                SELECT s.*, d.relay_number, d.name as device_name
+                FROM schedules s
+                JOIN devices d ON s.device_id = d.id
+                WHERE s.id = ?
+            `, [scheduleId]);
+
+            if (updatedSchedule.length === 0) {
+                throw new Error('Schedule not found after update');
+            }
+
+            // Cancel job lama jika ada
+            if (this.jobs.has(parseInt(scheduleId))) {
+                console.log(`Cancelling old job for schedule ${scheduleId}`);
+                this.jobs.get(parseInt(scheduleId)).cancel();
+            }
+
+            // Buat job baru dengan data yang diupdate
+            console.log(`Creating new job for updated schedule ${scheduleId}`);
+            this.scheduleJob(updatedSchedule[0]);
+
+            return updatedSchedule[0];
+        } catch (err) {
+            console.error('Error updating schedule:', err);
+            throw err;
+        }
+    }
 }
 
 module.exports = new ScheduleService();

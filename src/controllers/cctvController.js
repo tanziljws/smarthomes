@@ -174,8 +174,11 @@ const deleteCctv = async (req, res) => {
 const getCctvGroupDetail = async (req, res) => {
     const { id } = req.params;
 
+    if (!id) {
+        return res.status(400).json({ error: 'Group ID is required' });
+    }
+
     try {
-        // Get group info
         const [group] = await db.query(`
             SELECT * FROM cctv_groups WHERE id = ?
         `, [id]);
@@ -184,7 +187,6 @@ const getCctvGroupDetail = async (req, res) => {
             return res.status(404).json({ error: 'Group not found' });
         }
 
-        // Get CCTVs in group
         const [cctvs] = await db.query(`
             SELECT id, name, stream_url, status
             FROM cctvs
@@ -194,7 +196,7 @@ const getCctvGroupDetail = async (req, res) => {
 
         res.json({
             ...group[0],
-            cctvs: cctvs
+            cctvs: cctvs || []
         });
     } catch (err) {
         console.error('Error getting CCTV group detail:', err);

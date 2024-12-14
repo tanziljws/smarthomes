@@ -1,96 +1,478 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.metric-card {
+  position: relative;
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title-group h3 {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 500;
+}
+
+.icon {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
 .gauge-container {
   position: relative;
-  width: 300px;
-  height: 300px;
-  margin: 20px auto;
-}
-
-.gauge {
-  position: relative;
   width: 100%;
-  height: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  aspect-ratio: 1/1.5;
 }
 
-/* Semi-circle background */
 .gauge-bg {
   position: absolute;
   width: 100%;
-  height: 50%;
-  background: #2A2B2F;
-  border-radius: 300px 300px 0 0;
-  overflow: hidden;
-  transform-origin: bottom center;
-}
-
-/* Animated fill */
-.gauge-fill {
-  position: absolute;
-  width: 100%;
   height: 100%;
-  transform-origin: bottom center;
-  transition: transform 1s ease-out;
-}
-
-.temperature .gauge-fill {
-  background: linear-gradient(90deg, #FF4B4B, #FF6B6B);
-}
-
-.humidity .gauge-fill {
-  background: linear-gradient(90deg, #4CAF50, #81C784);
-}
-
-/* Center display */
-.gauge-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -30%);
-  text-align: center;
-  z-index: 10;
 }
 
 .gauge-value {
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1;
-  margin-bottom: 5px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .gauge-label {
-  font-size: 1.2rem;
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
   color: var(--text-secondary);
 }
 
-/* Gauge markers */
-.gauge-markers {
+.status-indicator {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
-.marker {
+.status-normal {
+  background: rgba(46, 213, 115, 0.2);
+  color: #2ed573;
+}
+
+.status-warning {
+  background: rgba(255, 187, 51, 0.2);
+  color: #ffbb33;
+}
+
+.status-critical {
+  background: rgba(255, 68, 68, 0.2);
+  color: #ff4444;
+}
+
+.gauge-pointer {
   position: absolute;
+  top: 50%;
+  left: 50%;
   width: 2px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  transform-origin: bottom center;
+  height: 45%;
+  background: currentColor;
+  transform-origin: center top;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Gauge numbers */
-.gauge-numbers {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+/* Status Colors */
+.gauge.normal .gauge-pointer,
+.gauge.normal .status-indicator { 
+  color: var(--success-color);
 }
 
-.number {
+.gauge.hot .gauge-pointer,
+.gauge.hot .status-indicator { 
+  color: var(--danger-color);
+}
+
+.gauge.cold .gauge-pointer,
+.gauge.cold .status-indicator { 
+  color: var(--primary-color);
+}
+
+.gauge.humid .gauge-pointer,
+.gauge.humid .status-indicator { 
+  color: var(--primary-color);
+}
+
+.gauge.dry .gauge-pointer,
+.gauge.dry .status-indicator { 
+  color: var(--danger-color);
+}
+
+/* Scale Numbers */
+.gauge-scale span {
   position: absolute;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  transform-origin: bottom center;
+  transform-origin: center center;
+}
+
+/* Hover Effects */
+.metric-card:hover .gauge-ring {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dashboard-grid {
+      grid-template-columns: 1fr;
+  }
+  
+  .gauge-container {
+      width: 200px;
+      height: 200px;
+  }
+  
+  .gauge-value {
+      font-size: 2rem;
+  }
+}
+
+/* Animation keyframes */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 5px currentColor; }
+  50% { box-shadow: 0 0 20px currentColor; }
+  100% { box-shadow: 0 0 5px currentColor; }
+}
+
+.gauge-pointer.active .pointer-head {
+  animation: pulseGlow 2s infinite;
+}
+
+.gauge-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 220px;
+    margin: 2rem auto;
+    aspect-ratio: 1;
+}
+
+/* Circular gauge background */
+.gauge-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Scale numbers */
+.gauge-scale {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.gauge-scale span {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Temperature gauge numbers (0-50) */
+.metric-card:first-child .gauge-scale span:nth-child(1) { /* 0 */
+    left: 18%;
+    top: 78%;
+}
+.metric-card:first-child .gauge-scale span:nth-child(2) { /* 10 */
+    left: 12%;
+    top: 58%;
+}
+.metric-card:first-child .gauge-scale span:nth-child(3) { /* 20 */
+    left: 22%;
+    top: 32%;
+}
+.metric-card:first-child .gauge-scale span:nth-child(4) { /* 30 */
+    left: 42%;
+    top: 22%;
+}
+.metric-card:first-child .gauge-scale span:nth-child(5) { /* 40 */
+    left: 62%;
+    top: 32%;
+}
+.metric-card:first-child .gauge-scale span:nth-child(6) { /* 50 */
+    left: 72%;
+    top: 58%;
+}
+
+/* Humidity gauge numbers (0-100) */
+.metric-card:last-child .gauge-scale span:nth-child(1) { /* 0 */
+    left: 18%;
+    top: 78%;
+}
+.metric-card:last-child .gauge-scale span:nth-child(2) { /* 20 */
+    left: 12%;
+    top: 58%;
+}
+.metric-card:last-child .gauge-scale span:nth-child(3) { /* 40 */
+    left: 22%;
+    top: 32%;
+}
+.metric-card:last-child .gauge-scale span:nth-child(4) { /* 60 */
+    left: 42%;
+    top: 22%;
+}
+.metric-card:last-child .gauge-scale span:nth-child(5) { /* 80 */
+    left: 62%;
+    top: 32%;
+}
+.metric-card:last-child .gauge-scale span:nth-child(6) { /* 100 */
+    left: 72%;
+    top: 58%;
+}
+
+/* Center value display */
+.gauge-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 100%;
+}
+
+.gauge-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.status-indicator {
+    font-size: 1rem;
+    color: inherit;
+}
+
+/* Pointer */
+.gauge-pointer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 40%;
+    background: currentColor;
+    transform-origin: top center;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pointer-head {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    border-radius: 50%;
+    transform: translateX(-50%);
+}
+
+/* Arc path for gauge */
+.gauge-arc {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 2;
+}
+
+/* Status colors */
+.gauge.normal { color: #4CAF50; }
+.gauge.hot { color: #FF5722; }
+.gauge.cold { color: #2196F3; }
+
+/* Range indicators */
+.range-indicators {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.range-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.range-indicator::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.range-indicator.cold::before { background: #2196F3; }
+.range-indicator.optimal::before { background: #4CAF50; }
+.range-indicator.hot::before { background: #FF5722; }
+
+/* Media queries for different screen sizes */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .metric-card {
+        padding: 1.5rem;
+    }
+
+    .gauge-wrapper {
+        max-width: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gauge-wrapper {
+        max-width: 150px;
+    }
+
+    .range-indicators {
+        margin-top: 1.5rem;
+    }
+}
+
+/* Animation for smooth transitions */
+@keyframes gaugeAnimation {
+    from { transform: rotate(-150deg); }
+    to { transform: rotate(var(--rotation)); }
+}
+
+.gauge-pointer {
+    animation: gaugeAnimation 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+    .metric-card {
+        padding: 15px;
+        margin: 10px 0;
+    }
+
+    .gauge-container {
+        max-width: 200px;
+        aspect-ratio: 1/1.2;
+    }
+
+    .gauge-value {
+        font-size: 1.8rem;
+    }
+
+    .gauge-label {
+        font-size: 0.9rem;
+        bottom: 15%;
+    }
+
+    .gauge-markers text {
+        font-size: 12px;
+    }
+}
+
+/* Small phones */
+@media screen and (max-width: 360px) {
+    .gauge-container {
+        max-width: 180px;
+    }
+
+    .gauge-value {
+        font-size: 1.6rem;
+    }
+
+    .gauge-label {
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape mode */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .gauge-container {
+        max-width: 160px;
+        aspect-ratio: 1/1;
+    }
+}
+
+/* Fix SVG scaling */
+.gauge-container svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Ensure smooth animations */
+.gauge-needle {
+    transition: transform 0.3s ease-out;
+}
+
+/* Improve visibility of gauge markers */
+.gauge-markers text {
+    fill: var(--text-secondary);
+    font-family: var(--font-family, 'Poppins', sans-serif);
+}
+
+/* Status indicators */
+.status-indicator {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-normal {
+    background: rgba(46, 213, 115, 0.2);
+    color: #2ed573;
+}
+
+.status-warning {
+    background: rgba(255, 187, 51, 0.2);
+    color: #ffbb33;
+}
+
+.status-critical {
+    background: rgba(255, 68, 68, 0.2);
+    color: #ff4444;
 }

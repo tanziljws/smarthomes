@@ -5,7 +5,7 @@
     height: 100vh;
     width: 250px;
     background: var(--bg-gradient);
-    transition: var(--transition);
+    transition: all 0.3s ease;
     z-index: 1000;
     overflow: hidden;
     white-space: nowrap;
@@ -56,13 +56,96 @@
     top: 20px;
     left: 20px;
     z-index: 1001;
-    background: none;
+    background: var(--bg-secondary);
     border: none;
+    border-radius: 8px;
+    padding: 8px;
     cursor: pointer;
-    padding: 10px;
+    box-shadow: var(--shadow-sm);
   }
 
   .burger-menu .material-icons {
     color: var(--text-primary);
     font-size: 24px;
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Mobile styles */
+  @media screen and (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        transition: all 0.3s ease;
+        z-index: 999;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    body.sidebar-open {
+        overflow: hidden;
+    }
+  }
+
+  .menu-toggle {
+    display: none; /* Hidden by default on desktop */
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .menu-toggle .material-icons {
+    font-size: 24px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .menu-toggle.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        height: 100vh;
+        width: 280px;
+        background: var(--sidebar-bg);
+        transition: all 0.3s ease;
+        z-index: 999;
+    }
+
+    .sidebar.open {
+        left: 0;
+        box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+    }
   }

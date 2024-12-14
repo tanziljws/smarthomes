@@ -15,6 +15,10 @@
     <link rel="stylesheet" href="styles/components/cctv.css">
 </head>
 <body>
+    <button class="burger-menu" onclick="toggleSidebar()">
+        <span class="material-icons">menu</span>
+    </button>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
@@ -102,9 +106,9 @@
                             </button>
                         </div>
                     </div>
-                    <button class="btn-add-cctv" onclick="app.openAddCctvModal()">
-                        <span class="material-icons">add_circle_outline</span>
-                        <span>Add Camera</span>
+                    <button class="btn-add-cctv" onclick="app.openAddCctvModal(this)" data-group-id="">
+                        <span class="material-icons">add_circle</span>
+                        ADD CCTV
                     </button>
                 </div>
             </div>
@@ -212,5 +216,6 @@
     </div>
 
     <script src="cctv.js"></script>
+    <script src="scripts/sidebar.js"></script>
 </body>
 </html>

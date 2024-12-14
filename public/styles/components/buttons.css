@@ -108,31 +108,31 @@
 }
 
 .toggle-switch {
-  position: relative;
   width: 60px;
-  height: 34px;
-  background: var(--bg-card);
-  border-radius: 17px;
-  padding: 4px;
-  transition: all 0.3s ease;
+  height: 30px;
+  background: #2a2a2a;
+  border-radius: 15px;
+  padding: 3px;
+  position: relative;
   cursor: pointer;
-}
-
-.toggle-switch.active {
-  background: var(--accent-success);
+  transition: all 0.3s ease;
 }
 
 .toggle-switch::before {
   content: '';
   position: absolute;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: white;
+  left: 3px;
   transition: all 0.3s ease;
-  left: 4px;
+}
+
+.toggle-switch.active {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
 }
 
 .toggle-switch.active::before {
-  transform: translateX(26px);
+  transform: translateX(30px);
 }

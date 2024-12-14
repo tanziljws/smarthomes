@@ -3,7 +3,14 @@ const router = express.Router();
 const axios = require('axios');
 
 router.get('/:locationCode', async (req, res) => {
-    const { locationCode } = req.params;
+    const locationCode = req.params.locationCode.trim();
+    if (!/^\d+$/.test(locationCode)) {
+        return res.status(400).json({ 
+            error: 'Invalid location code format',
+            details: 'Location code must contain only numbers'
+        });
+    }
+
     console.log('Received request for location:', locationCode);
 
     try {
@@ -15,8 +22,13 @@ router.get('/:locationCode', async (req, res) => {
             headers: {
                 'Accept': 'application/json',
                 'User-Agent': 'Weather Monitoring App'
-            }
+            },
+            timeout: 5000
         });
+
+        if (!response.data) {
+            throw new Error('Empty response from BMKG API');
+        }
 
         console.log('BMKG API Response:', response.data);
 
@@ -36,6 +48,13 @@ router.get('/:locationCode', async (req, res) => {
         res.json(weatherData);
 
     } catch (error) {
+        if (error.code === 'ECONNABORTED') {
+            return res.status(504).json({
+                error: 'Request timeout',
+                message: 'BMKG API is not responding'
+            });
+        }
+
         console.error('Error details:', {
             message: error.message,
             stack: error.stack,

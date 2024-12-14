@@ -1,0 +1,238 @@
+#include <WiFiManager.h>
+#include <PubSubClient.h>
+#include <ESP8266WebServer.h>
+#include <DHTesp.h>  // Library untuk sensor DHT
+
+// Tambahkan konstanta untuk deteksi tepukan
+#define CLAP_THRESHOLD 1000  // Sesuaikan dengan sensitivitas yang diinginkan
+#define CLAP_TIMEOUT 1000   // Timeout antara tepukan dalam milidetik
+
+const char* mqttServer = "192.168.2.84";  // IP of your MQTT broker
+const int mqttPort = 1883;
+const char* mqttUser = "root";
+const char* mqttPassword = "adminse10";
+const char* publishStatusTopic = "smarthome/status";
+const char* subscribeControlTopic = "smarthome/control";
+const char* publishDhtTopic = "smarthome/dht";  // Topic untuk data DHT
+const char* publishAirQualityTopic = "smarthome/air_quality"; // Topic untuk kualitas udara
+const char* publishSoundLevelTopic = "smarthome/sound_level"; // Topic untuk tingkat suara
+
+// Relay pins
+const int relayPins[] = {D0, D1, D2, D3};
+int relayState[4] = {LOW, LOW, LOW, LOW}; // Store relay states
+
+// DHT Sensor
+const int dhtPin = D5;  // Pin data untuk DHT
+DHTesp dht;
+
+// ZPH-300F Sensor
+const int airQualityPin = A0; // Pin ADC untuk ZPH-300F
+
+// MAX9814 Sensor
+const int soundSensorPin = D7; // Pin ADC untuk MAX9814
+
+// Tambahkan variabel global untuk deteksi tepukan
+unsigned long lastClapTime = 0;
+int clapCount = 0;
+bool allRelaysOn = false;
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+void setup() {
+  Serial.begin(115200);
+
+  // Initialize relay pins
+  for (int i = 0; i < 4; i++) {
+    pinMode(relayPins[i], OUTPUT);
+    digitalWrite(relayPins[i], LOW);  // Inisialisasi dalam keadaan OFF
+    relayState[i] = LOW;
+  }
+
+  // Initialize DHT sensor
+  dht.setup(dhtPin, DHTesp::DHT11);  // Gunakan DHT11, ubah ke DHT22 jika pakai DHT22
+
+  // Initialize WiFi and MQTT
+  setupWiFi();
+  setupMQTT();
+}
+
+void loop() {
+  if (!client.connected()) {
+    reconnectMQTT();
+  }
+  client.loop();
+
+  static unsigned long lastDhtUpdate = 0;
+  if (millis() - lastDhtUpdate >= 2000) {  // Update DHT data setiap 2 detik
+    sendDhtData();
+    lastDhtUpdate = millis();
+  }
+
+  static unsigned long lastAirQualityUpdate = 0;
+  if (millis() - lastAirQualityUpdate >= 5000) {  // Update kualitas udara setiap 5 detik
+    sendAirQualityData();
+    lastAirQualityUpdate = millis();
+  }
+
+  static unsigned long lastSoundLevelUpdate = 0;
+  if (millis() - lastSoundLevelUpdate >= 1000) {  // Update tingkat suara setiap 1 detik
+    sendSoundLevelData();
+    lastSoundLevelUpdate = millis();
+  }
+}
+
+void setupWiFi() {
+  WiFiManager wifiManager;
+  if (!wifiManager.autoConnect("SmartHome_Config")) {
+    Serial.println("Failed to connect to WiFi. Restarting...");
+    delay(3000);
+    ESP.restart();
+  }
+  Serial.println("Connected to WiFi");
+}
+
+void setupMQTT() {
+  client.setServer(mqttServer, mqttPort);
+  client.setCallback(mqttCallback);
+  reconnectMQTT();
+}
+
+void mqttCallback(char* topic, byte* payload, unsigned int length) {
+  String message = "";
+  for (unsigned int i = 0; i < length; i++) {
+    message += (char)payload[i];
+  }
+  Serial.println("Received MQTT message: " + message);
+
+  // Handle control topic
+  if (String(topic) == subscribeControlTopic) {
+    for (int i = 0; i < 4; i++) {
+      String relayOnCommand = "RELAY" + String(i + 1) + "_ON";
+      String relayOffCommand = "RELAY" + String(i + 1) + "_OFF";
+      
+      if (message == relayOnCommand) {
+        controlRelay(i, LOW, relayOnCommand);
+      } else if (message == relayOffCommand) {
+        controlRelay(i, HIGH, relayOffCommand);
+      }
+    }
+  }
+}
+
+void controlRelay(int relayIndex, int state, String command) {
+  if (relayIndex >= 0 && relayIndex < 4) {
+    digitalWrite(relayPins[relayIndex], state);
+    relayState[relayIndex] = state;
+    client.publish(publishStatusTopic, command.c_str());
+    Serial.println("Published: " + command);
+  }
+}
+
+void reconnectMQTT() {
+  while (!client.connected()) {
+    Serial.print("Connecting to MQTT at ");
+    Serial.print(mqttServer);
+    Serial.print(":");
+    Serial.println(mqttPort);
+
+    if (client.connect("SmartHomeClient", mqttUser, mqttPassword)) {
+      Serial.println("connected");
+      client.subscribe(subscribeControlTopic);
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      delay(5000);
+    }
+  }
+}
+
+void sendDhtData() {
+  TempAndHumidity data = dht.getTempAndHumidity();
+
+  if (dht.getStatus() == DHTesp::ERROR_NONE) {
+    String payload = "{";
+    payload += "\"temperature\": " + String(data.temperature, 1) + ", ";
+    payload += "\"humidity\": " + String(data.humidity, 1);
+    payload += "}";
+
+    client.publish(publishDhtTopic, payload.c_str());
+    Serial.println("DHT data sent: " + payload);
+  } else {
+    Serial.println("Failed to read from DHT sensor");
+  }
+}
+
+void sendAirQualityData() {
+  int airQualityValue = analogRead(airQualityPin); 
+  String airQualityStatus = airQualityValue < 300 ? "Good" : airQualityValue < 600 ? "Moderate" : "Poor";
+
+  String payload = "{";
+  payload += "\"air_quality\": " + String(airQualityValue) + ", ";
+  payload += "\"status\": \"" + airQualityStatus + "\"";
+  payload += "}";
+
+  client.publish(publishAirQualityTopic, payload.c_str());
+  Serial.println("Air quality data sent: " + payload);
+}
+
+void sendSoundLevelData() {
+  int soundLevel = analogRead(soundSensorPin);
+  
+  // Deteksi tepukan
+  if (soundLevel > CLAP_THRESHOLD) {
+    unsigned long currentTime = millis();
+    
+    // Cek jika sudah melewati timeout
+    if (currentTime - lastClapTime > CLAP_TIMEOUT) {
+      clapCount = 1;
+    } else {
+      clapCount++;
+      
+      // Jika terdeteksi 2 tepukan
+      if (clapCount == 2) {
+        // Toggle semua relay
+        toggleAllRelays();
+        clapCount = 0;
+      }
+    }
+    lastClapTime = currentTime;
+  }
+
+  // Format dan kirim data sound level
+  String soundStatus = (soundLevel < 100) ? "Quiet" : "Loud";
+  
+  String payload = "{";
+  payload += "\"sound_level\": " + String(soundLevel) + ", ";
+  payload += "\"status\": \"" + soundStatus + "\"";
+  payload += "}";
+
+  client.publish(publishSoundLevelTopic, payload.c_str());
+  Serial.println("Sound level data sent: " + payload);
+}
+
+// Tambahkan fungsi untuk mengontrol semua relay sekaligus
+void toggleAllRelays() {
+  allRelaysOn = !allRelaysOn;  // Toggle state
+  Serial.println("Toggling all relays to: " + String(allRelaysOn ? "ON" : "OFF"));
+  
+  for (int i = 0; i < 4; i++) {
+    if (allRelaysOn) {
+      // Nyalakan semua relay
+      digitalWrite(relayPins[i], HIGH);  // Ubah ke HIGH untuk menyalakan
+      relayState[i] = HIGH;
+      String command = "RELAY" + String(i + 1) + "_ON";
+      client.publish(publishStatusTopic, command.c_str());
+      Serial.println("Setting relay " + String(i + 1) + " to ON");
+    } else {
+      // Matikan semua relay
+      digitalWrite(relayPins[i], LOW);   // Ubah ke LOW untuk mematikan
+      relayState[i] = LOW;
+      String command = "RELAY" + String(i + 1) + "_OFF";
+      client.publish(publishStatusTopic, command.c_str());
+      Serial.println("Setting relay " + String(i + 1) + " to OFF");
+    }
+  }
+  
+  Serial.println("All relays have been toggled");
+}
