@@ -64,6 +64,10 @@
                         <span class="material-icons">devices_other</span>
                         Add Device
                     </button>
+                    <button id="clapToggleBtn" class="btn-clap-toggle" onclick="toggleClapFeature()">
+                        <span class="material-icons">mic</span>
+                        <span id="clapStatusText">Clap Control: OFF</span>
+                    </button>
                 </div>
 
                 <!-- Device Groups -->
@@ -263,35 +267,108 @@
         <div class="modal-content">
             <h2>Edit Schedule</h2>
             <form id="editScheduleForm">
-                <label for="editScheduleDevice">Device</label>
-                <select id="editScheduleDevice" required>
-                    <option value="">Select Device</option>
-                    <!-- Options will be populated here -->
-                </select>
-
-                <label for="editScheduleTime">Time</label>
-                <input type="time" id="editScheduleTime" required>
-
-                <label for="editScheduleAction">Action</label>
-                <select id="editScheduleAction" required>
-                    <option value="ON">Turn ON</option>
-                    <option value="OFF">Turn OFF</option>
-                </select>
-
-                <label>Days</label>
-                <div class="days-selector">
-                    <label><input type="checkbox" name="editDays" value="0"> Mon</label>
-                    <label><input type="checkbox" name="editDays" value="1"> Tue</label>
-                    <label><input type="checkbox" name="editDays" value="2"> Wed</label>
-                    <label><input type="checkbox" name="editDays" value="3"> Thu</label>
-                    <label><input type="checkbox" name="editDays" value="4"> Fri</label>
-                    <label><input type="checkbox" name="editDays" value="5"> Sat</label>
-                    <label><input type="checkbox" name="editDays" value="6"> Sun</label>
+                <div class="form-group">
+                    <label for="editScheduleDevice">Device:</label>
+                    <select id="editScheduleDevice" required>
+                        <!-- Devices will be loaded here -->
+                    </select>
                 </div>
-
-                <button type="submit">Save Changes</button>
-                <button type="button" onclick="hideModal('editScheduleModal')">Cancel</button>
+                
+                <div class="form-group">
+                    <label for="editScheduleTime">Time:</label>
+                    <input type="time" id="editScheduleTime" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editScheduleAction">Action:</label>
+                    <select id="editScheduleAction" required>
+                        <option value="ON">ON</option>
+                        <option value="OFF">OFF</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Days:</label>
+                    <div class="days-checkboxes">
+                        <label><input type="checkbox" name="editDays" value="0"> Sun</label>
+                        <label><input type="checkbox" name="editDays" value="1"> Mon</label>
+                        <label><input type="checkbox" name="editDays" value="2"> Tue</label>
+                        <label><input type="checkbox" name="editDays" value="3"> Wed</label>
+                        <label><input type="checkbox" name="editDays" value="4"> Thu</label>
+                        <label><input type="checkbox" name="editDays" value="5"> Fri</label>
+                        <label><input type="checkbox" name="editDays" value="6"> Sat</label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-save">Save Changes</button>
+                    <button type="button" class="btn-cancel" onclick="hideModal('editScheduleModal')">Cancel</button>
+                </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Clap Settings Modal -->
+    <div id="clapSettingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Clap Control Settings</h2>
+                <button class="btn-close" onclick="hideModal('clapSettingsModal')">×</button>
+            </div>
+            <form id="clapSettingsForm">
+                <div class="form-group">
+                    <label class="switch-label">
+                        <span>Enable Clap Control</span>
+                        <label class="switch">
+                            <input type="checkbox" id="clapEnabled" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="clapRelay">Control Relay:</label>
+                    <select id="clapRelay" name="clapRelay" required>
+                        <option value="3">Relay 4</option>
+                        <option value="2">Relay 3</option>
+                        <option value="1">Relay 2</option>
+                        <option value="0">Relay 1</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="soundThreshold">Sound Threshold (0-1024):</label>
+                    <input type="number" id="soundThreshold" name="soundThreshold" 
+                           min="0" max="1024" value="600" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">Save Settings</button>
+                    <button type="button" onclick="hideModal('clapSettingsModal')" 
+                            class="btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmClapModal" class="modal confirm-modal">
+        <div class="modal-content">
+            <h2>Enable Clap Control?</h2>
+            <p>Are you sure you want to enable clap control? This will allow you to control devices by clapping.</p>
+            <div class="modal-actions">
+                <button class="btn-confirm" onclick="confirmEnableClap()">Yes, Enable</button>
+                <button class="btn-cancel" onclick="hideModal('confirmClapModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal untuk Disable Clap Control -->
+    <div id="confirmDisableClapModal" class="modal confirm-modal">
+        <div class="modal-content">
+            <h2>Disable Clap Control?</h2>
+            <p>Are you sure you want to disable clap control? This will turn off the clap detection feature.</p>
+            <div class="modal-actions">
+                <button class="btn-confirm" onclick="confirmDisableClap()">Yes, Disable</button>
+                <button class="btn-cancel" onclick="hideModal('confirmDisableClapModal')">Cancel</button>
+            </div>
         </div>
     </div>
 

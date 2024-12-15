@@ -759,3 +759,69 @@ input:checked + .slider:before {
     50% { transform: scale(1.5); opacity: 0; }
     100% { transform: scale(1); opacity: 0.5; }
 }
+
+/* Clap Control Button */
+.btn-clap-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: linear-gradient(135deg, #FF4081, #E91E63);
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-clap-toggle:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+}
+
+.btn-clap-toggle.active {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-clap-toggle .material-icons {
+    font-size: 24px;
+    animation: pulse 2s infinite;
+}
+
+/* Confirmation Modal */
+.confirm-modal {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.confirm-modal .modal-content {
+    max-width: 400px;
+    text-align: center;
+    padding: 30px;
+}
+
+.confirm-modal .modal-actions {
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.confirm-modal .btn-confirm {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    padding: 12px 30px;
+    margin: 0 10px;
+}
+
+.confirm-modal .btn-cancel {
+    background: linear-gradient(135deg, #FF4081, #E91E63);
+    color: white;
+    padding: 12px 30px;
+    margin: 0 10px;
+}

@@ -77,7 +77,7 @@ class MqttService {
 
         this.client.on('connect', () => {
             console.log('Connected to MQTT broker');
-            this.client.subscribe('smarthome/status');
+            this.client.subscribe('smarthome/control');
             this.client.subscribe('smarthome/dht');
             this.client.subscribe('smarthome/airquality');
         });
@@ -212,10 +212,21 @@ class MqttService {
         }
     }
 
-    publishCommand(command) {
-        if (this.client) {
-            this.client.publish('smarthome/control', command);
-        }
+    publishCommand(topic, payload) {
+        console.log('Publishing MQTT message:');
+        console.log('Topic:', topic);
+        console.log('Payload:', payload);
+
+        // Pastikan payload adalah string
+        const messagePayload = typeof payload === 'string' ? payload : JSON.stringify(payload);
+        
+        this.client.publish(topic, messagePayload, (error) => {
+            if (error) {
+                console.error('MQTT publish error:', error);
+            } else {
+                console.log('MQTT message published successfully');
+            }
+        });
     }
 
     async controlRelay(relayNumber, action) {
@@ -240,6 +251,19 @@ class MqttService {
             console.error('Error in controlRelay:', error);
             throw error;
         }
+    }
+
+    async requestClapStatus() {
+        return new Promise((resolve) => {
+            // Publish request ke ESP
+            this.client.publish('smarthome/request_clap_status', JSON.stringify({ request: true }));
+            
+            // Subscribe untuk mendengarkan response
+            this.client.subscribe('smarthome/clap_status', (message) => {
+                const status = JSON.parse(message);
+                resolve(status);
+            });
+        });
     }
 }
 
