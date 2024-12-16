@@ -5,11 +5,19 @@ class VoiceStreamer {
         this.mediaStream = null;
         this.websocket = null;
         this.audioContext = null;
-        this.mediaRecorder = null;
+        this.bufferSize = 512;
     }
 
     async startStreaming() {
         try {
+            // Cek permissions dulu
+            const permissions = await navigator.permissions.query({ name: 'microphone' });
+            console.log('Microphone permission status:', permissions.state);
+            
+            if (permissions.state === 'denied') {
+                throw new Error('Microphone permission denied');
+            }
+            
             // Cek dukungan getUserMedia
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 throw new Error('Browser tidak mendukung audio capture');
@@ -18,28 +26,35 @@ class VoiceStreamer {
             // Request permission dengan explicit constraints
             this.mediaStream = await navigator.mediaDevices.getUserMedia({
                 audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: true,
+                    echoCancellation: false,
+                    noiseSuppression: false,
+                    autoGainControl: false,
                     channelCount: 1,
-                    sampleRate: 44100
+                    sampleRate: 44100,
+                    latency: 0.01
                 },
                 video: false // pastikan video dimatikan
             });
 
-            // Setup Web Audio API dengan error handling
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const source = this.audioContext.createMediaStreamSource(this.mediaStream);
-            const processor = this.audioContext.createScriptProcessor(2048, 1, 1);
+            // Setup Web Audio API dengan latency rendah
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                latencyHint: 'interactive',
+                sampleRate: 44100
+            });
 
+            const source = this.audioContext.createMediaStreamSource(this.mediaStream);
+            const processor = this.audioContext.createScriptProcessor(this.bufferSize, 1, 1);
+
+            // Optimize audio processing
             source.connect(processor);
             processor.connect(this.audioContext.destination);
 
-            // Setup WebSocket dengan error handling
+            // Setup WebSocket dengan binary type
             this.websocket = new WebSocket(`ws://${this.serverUrl}:8081/stream`);
-            
+            this.websocket.binaryType = 'arraybuffer';
+
             this.websocket.onopen = () => {
-                console.log('WebSocket connected');
+                console.log('WebSocket connected to:', this.serverUrl);
                 this.isStreaming = true;
                 this.updateUI(true);
             };
@@ -50,14 +65,29 @@ class VoiceStreamer {
                 showError('Connection error');
             };
 
+            this.websocket.onmessage = (event) => {
+                console.log('Received message from server:', event.data);
+            };
+
+            this.websocket.onclose = () => {
+                console.log('WebSocket connection closed');
+                this.stopStreaming();
+            };
+
             processor.onaudioprocess = (e) => {
                 if (this.isStreaming && this.websocket.readyState === WebSocket.OPEN) {
                     const inputData = e.inputBuffer.getChannelData(0);
                     const pcmData = new Int16Array(inputData.length);
+                    
+                    // Optimize conversion
                     for (let i = 0; i < inputData.length; i++) {
-                        pcmData[i] = inputData[i] * 0x7FFF;
+                        pcmData[i] = Math.max(-32768, Math.min(32767, inputData[i] * 32768));
                     }
-                    this.websocket.send(pcmData.buffer);
+
+                    // Send immediately
+                    if (this.websocket.bufferedAmount < 8192) { // Check buffer state
+                        this.websocket.send(pcmData.buffer);
+                    }
                 }
             };
 
