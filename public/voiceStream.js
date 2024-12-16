@@ -163,7 +163,7 @@ function showError(message) {
 }
 
 // Inisialisasi voice streamer
-const voiceStreamer = new VoiceStreamer('192.168.2.90');
+const voiceStreamer = new VoiceStreamer('100.81.75.85');
 
 // Tambahkan event listener ke tombol
 document.getElementById('voiceStreamBtn')?.addEventListener('click', () => {
