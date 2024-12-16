@@ -423,20 +423,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
-            sidebar.classList.toggle('active');
-
-            // Add overlay when sidebar is open on mobile
-            let overlay = document.querySelector('.sidebar-overlay');
-            if (sidebar.classList.contains('active')) {
-                if (!overlay) {
-                    overlay = document.createElement('div');
-                    overlay.className = 'sidebar-overlay';
-                    overlay.onclick = () => this.toggleSidebar();
-                    document.body.appendChild(overlay);
+            const mainContent = document.querySelector('.main-content');
+            
+            if (sidebar) {
+                sidebar.classList.toggle('show');
+                
+                if (sidebar.classList.contains('show')) {
+                    sidebar.style.transform = 'translateX(0)';
+                    sidebar.style.visibility = 'visible';
+                } else {
+                    sidebar.style.transform = 'translateX(-100%)';
+                    setTimeout(() => {
+                        if (!sidebar.classList.contains('show')) {
+                            sidebar.style.visibility = 'hidden';
+                        }
+                    }, 300);
                 }
-                overlay.style.display = 'block';
-            } else if (overlay) {
-                overlay.style.display = 'none';
             }
         },
 
@@ -625,6 +627,95 @@ style.textContent = `
     .stream-wrapper:hover {
         transform: scale(1.02);
     }
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 250px;
+        background-color: #1a1a1a;
+        color: white;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        visibility: hidden;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .sidebar .logo {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sidebar .logo h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .sidebar nav {
+        padding: 20px 0;
+    }
+
+    .sidebar nav a {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        color: white;
+        text-decoration: none;
+        gap: 10px;
+        transition: background-color 0.3s;
+    }
+
+    .sidebar nav a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar nav a.active {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar nav a span {
+        font-size: 1.1rem;
+    }
+
+    .sidebar nav a .material-icons {
+        font-size: 24px;
+    }
+
+    /* Tambahan style untuk halaman CCTV */
+    .cctv-container {
+        padding: 20px;
+        margin-left: 0;
+        transition: margin-left 0.3s ease;
+    }
+
+    .cctv-container.shifted {
+        margin-left: 250px;
+    }
+
+    .menu-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+    }
+
+    .menu-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
 `;
 
 document.head.appendChild(style);
@@ -796,3 +887,4 @@ document.getElementById('editGroupForm')?.addEventListener('submit', async (e) =
         alert('Gagal mengupdate grup');
     }
 });
+

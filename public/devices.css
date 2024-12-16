@@ -420,3 +420,29 @@ input:checked + .slider:before {
     align-items: center;
     gap: 16px;
 }
+
+.btn-voice-stream {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #FF4081, #E91E63);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-voice-stream:hover {
+    opacity: 0.9;
+}
+
+.btn-voice-stream.active {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+}
+
+.btn-voice-stream i {
+    font-size: 24px;
+}

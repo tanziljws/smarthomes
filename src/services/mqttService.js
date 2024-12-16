@@ -31,6 +31,7 @@ class MqttService {
             humidity: null,
             deviceStatus: null
         };
+        this.clapStatus = { enabled: false };
     }
 
     shouldSendNotification(type, value, threshold) {
@@ -254,16 +255,16 @@ class MqttService {
     }
 
     async requestClapStatus() {
-        return new Promise((resolve) => {
-            // Publish request ke ESP
-            this.client.publish('smarthome/request_clap_status', JSON.stringify({ request: true }));
-            
-            // Subscribe untuk mendengarkan response
-            this.client.subscribe('smarthome/clap_status', (message) => {
-                const status = JSON.parse(message);
-                resolve(status);
-            });
-        });
+        return this.clapStatus;
+    }
+
+    updateClapStatus(enabled, deviceId = null, threshold = null) {
+        this.clapStatus = {
+            enabled: enabled,
+            deviceId: deviceId,
+            threshold: threshold
+        };
+        return this.clapStatus;
     }
 }
 

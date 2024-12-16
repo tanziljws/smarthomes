@@ -68,6 +68,10 @@
                         <span class="material-icons">mic</span>
                         <span id="clapStatusText">Clap Control: OFF</span>
                     </button>
+                    <button id="voiceStreamBtn" class="btn-voice-stream">
+                        <i class="material-icons">mic</i>
+                        VOICE STREAM: OFF
+                    </button>
                 </div>
 
                 <!-- Device Groups -->
@@ -238,27 +242,26 @@
     <div id="editDeviceModal" class="modal">
         <div class="modal-content">
             <h2>Edit Device</h2>
-            <div class="form-group">
-                <label for="editDeviceName">Device Name</label>
-                <input type="text" id="editDeviceName" required>
-            </div>
-            <div class="form-group">
-                <label for="editDeviceStatus">Status</label>
-                <select id="editDeviceStatus" required>
-                    <option value="ON">ON</option>
-                    <option value="OFF">OFF</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="editDeviceGroup">Group</label>
-                <select id="editDeviceGroup">
-                    <!-- Populate with groups if needed -->
-                </select>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-save" onclick="saveDeviceChanges()">Save Changes</button>
-                <button type="button" class="btn-cancel" onclick="hideModal('editDeviceModal')">Cancel</button>
-            </div>
+            <form id="editDeviceForm">
+                <div class="form-group">
+                    <label for="editDeviceName">Device Name</label>
+                    <input type="text" id="editDeviceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDeviceRelay">Relay Number</label>
+                    <input type="number" id="editDeviceRelay" min="1" max="4" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDeviceGroup">Group</label>
+                    <select id="editDeviceGroup">
+                        <option value="">No Group</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Save Changes</button>
+                    <button type="button" onclick="hideModal('editDeviceModal')">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -375,5 +378,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="devices.js"></script>
     <script src="scripts/sidebar.js"></script>
+    <script src="/voiceStream.js"></script>
 </body>
 </html>

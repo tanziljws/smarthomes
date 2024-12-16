@@ -1,21 +1,19 @@
-// Deklarasikan state di awal file
 let clapFeatureEnabled = false;
 
-// Tambahkan di bagian atas file, setelah deklarasi state
 async function loadClapStatus() {
     try {
-        const params = getUrlParams();
-        if (params.clapRelay) { // Jika ada parameter di URL
-            clapFeatureEnabled = true;
-            updateClapControlUI(true);
-        } else {
-            const response = await fetch('/devices/clap-settings');
-            const data = await response.json();
-            clapFeatureEnabled = data.enabled;
-            updateClapControlUI(data.enabled);
-        }
+        const response = await fetch('/devices/clap-settings');
+        const data = await response.json();
+        
+        // Update local state
+        clapFeatureEnabled = Boolean(data.enabled);
+        
+        // Update UI
+        updateClapControlUI(clapFeatureEnabled);
+        
     } catch (error) {
         console.error('Error loading clap status:', error);
+        updateClapControlUI(false);
     }
 }
 
@@ -31,16 +29,11 @@ function hideModal(modalId) {
 
 // Function untuk toggle clap feature
 async function toggleClapFeature() {
-    const button = document.getElementById('clapToggleBtn');
-    const statusText = document.getElementById('clapStatusText');
-    
-    if (!clapFeatureEnabled) {
-        // Show confirmation modal first
-        showModal('confirmClapModal');
-    } else {
-        // If disabling, proceed directly
-        try {
-            await fetch('/devices/clap-settings', {
+    try {
+        if (!clapFeatureEnabled) {
+            showModal('confirmClapModal');
+        } else {
+            const response = await fetch('/devices/clap-settings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,14 +43,18 @@ async function toggleClapFeature() {
                 })
             });
 
+            if (!response.ok) {
+                throw new Error('Failed to disable clap control');
+            }
+
             clapFeatureEnabled = false;
-            button.classList.remove('active');
-            statusText.textContent = 'Clap Control: OFF';
+            localStorage.setItem('clapControlStatus', 'false');
+            updateClapControlUI(false);
             showSuccess('Clap control disabled');
-        } catch (error) {
-            console.error('Error disabling clap control:', error);
-            showError('Failed to disable clap control');
         }
+    } catch (error) {
+        console.error('Error toggling clap control:', error);
+        showError('Failed to toggle clap control');
     }
 }
 
@@ -212,11 +209,11 @@ document.addEventListener('DOMContentLoaded', () => {
         clapSettingsForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const enabled = document.getElementById('clapEnabled')?.checked ?? true;
-            const relaySelect = document.getElementById('clapRelay');
-            const threshold = document.getElementById('soundThreshold');
-
             try {
+                const enabled = document.getElementById('clapEnabled')?.checked ?? true;
+                const relaySelect = document.getElementById('clapRelay');
+                const threshold = document.getElementById('soundThreshold');
+
                 const response = await fetch('/devices/clap-settings', {
                     method: 'POST',
                     headers: {
@@ -233,21 +230,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (data.success) {
                     hideModal('clapSettingsModal');
-                    
-                    // Update URL dengan parameter baru
-                    const newUrl = `${window.location.pathname}?clapRelay=${relaySelect.value}&soundThreshold=${threshold.value}`;
-                    window.history.pushState({}, '', newUrl);
-                    
-                    // Update UI state
                     clapFeatureEnabled = enabled;
                     updateClapControlUI(enabled);
                     showSuccess('Clap control settings updated');
                 } else {
-                    showError('Failed to update clap settings');
+                    throw new Error(data.error || 'Failed to update settings');
                 }
             } catch (error) {
                 console.error('Error updating clap settings:', error);
-                showError('Failed to update clap settings');
+                showError(error.message || 'Failed to update clap settings');
             }
         });
     }
@@ -514,19 +505,220 @@ function getUrlParams() {
 function updateClapControlUI(enabled) {
     const button = document.getElementById('clapToggleBtn');
     const statusText = document.getElementById('clapStatusText');
+    const statusBanner = document.querySelector('.status-banner');
     
-    if (enabled) {
-        button.classList.add('active');
-        statusText.textContent = 'Clap Control: ON';
-        button.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
-    } else {
-        button.classList.remove('active');
-        statusText.textContent = 'Clap Control: OFF';
-        button.style.background = 'linear-gradient(135deg, #FF4081, #E91E63)';
+    if (button && statusText) {
+        if (enabled) {
+            button.classList.add('active');
+            button.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+            statusText.textContent = 'CLAP CONTROL: ON';
+            if (statusBanner) {
+                statusBanner.textContent = 'Clap control enabled';
+                statusBanner.style.backgroundColor = '#4CAF50';
+            }
+        } else {
+            button.classList.remove('active');
+            button.style.background = 'linear-gradient(135deg, #FF4081, #E91E63)';
+            statusText.textContent = 'CLAP CONTROL: OFF';
+            if (statusBanner) {
+                statusBanner.textContent = 'Clap control disabled';
+                statusBanner.style.backgroundColor = '#E91E63';
+            }
+        }
     }
 }
 
 // Tambahkan event listener untuk window load
 window.addEventListener('load', () => {
     loadClapStatus();
+});
+
+async function editDevice(deviceId) {
+    if (!deviceId) {
+        console.error('No device ID provided');
+        showError('Invalid device ID');
+        return;
+    }
+
+    try {
+        // Fetch device details
+        const response = await fetch(`/devices/devices/${deviceId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch device details');
+        }
+        
+        const device = await response.json();
+        if (!device) {
+            throw new Error('No device data received');
+        }
+
+        // Make sure modal elements exist before trying to populate them
+        const nameInput = document.getElementById('editDeviceName');
+        const relayInput = document.getElementById('editDeviceRelay');
+        const groupSelect = document.getElementById('editDeviceGroup');
+        const editForm = document.getElementById('editDeviceForm');
+
+        if (!nameInput || !relayInput || !editForm) {
+            throw new Error('Required modal elements not found');
+        }
+
+        // Populate edit modal with device data
+        nameInput.value = device.name || '';
+        relayInput.value = device.relay_number || '';
+        
+        if (groupSelect) {
+            groupSelect.value = device.group_id || '';
+        }
+
+        // Store device ID in the form for submission
+        editForm.dataset.deviceId = deviceId;
+
+        // Show edit modal
+        showModal('editDeviceModal');
+    } catch (error) {
+        console.error('Error loading device details:', error);
+        showError(error.message || 'Failed to load device details');
+    }
+}
+
+document.getElementById('editDeviceForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const form = e.target;
+    const deviceId = form.dataset.deviceId;
+    
+    if (!deviceId) {
+        showError('No device ID found');
+        return;
+    }
+
+    try {
+        const formData = {
+            name: document.getElementById('editDeviceName').value,
+            relay_number: parseInt(document.getElementById('editDeviceRelay').value),
+            group_id: document.getElementById('editDeviceGroup')?.value || null
+        };
+
+        const response = await fetch(`/devices/devices/${deviceId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to update device');
+        }
+
+        // Refresh devices list
+        await loadDevices();
+        
+        // Hide modal
+        hideModal('editDeviceModal');
+        
+        // Show success message
+        showSuccess('Device updated successfully');
+    } catch (error) {
+        console.error('Error updating device:', error);
+        showError(error.message || 'Failed to update device');
+    }
+});
+
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    
+    if (sidebar) {
+        sidebar.classList.toggle('show');
+        
+        // Update styles saat sidebar ditampilkan
+        if (sidebar.classList.contains('show')) {
+            sidebar.style.transform = 'translateX(0)';
+            sidebar.style.visibility = 'visible';
+        } else {
+            sidebar.style.transform = 'translateX(-100%)';
+            // Jangan langsung sembunyikan, tunggu animasi selesai
+            setTimeout(() => {
+                if (!sidebar.classList.contains('show')) {
+                    sidebar.style.visibility = 'hidden';
+                }
+            }, 300);
+        }
+    }
+}
+
+// Add CSS styles dynamically
+const style = document.createElement('style');
+style.textContent = `
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        width: 250px;
+        background-color: #1a1a1a;
+        color: white;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        visibility: hidden;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .sidebar .logo {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sidebar .logo h2 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .sidebar nav {
+        padding: 20px 0;
+    }
+
+    .sidebar nav a {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        color: white;
+        text-decoration: none;
+        gap: 10px;
+        transition: background-color 0.3s;
+    }
+
+    .sidebar nav a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar nav a.active {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar nav a span {
+        font-size: 1.1rem;
+    }
+
+    .sidebar nav a .material-icons {
+        font-size: 24px;
+    }
+`;
+document.head.appendChild(style);
+
+// Tambahkan event listener untuk menu button
+document.addEventListener('DOMContentLoaded', () => {
+    const menuBtn = document.querySelector('.menu-btn');
+    if (menuBtn) {
+        menuBtn.addEventListener('click', toggleSidebar);
+    }
 });

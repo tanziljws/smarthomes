@@ -16,37 +16,49 @@ router.post('/clap-settings', async (req, res) => {
     try {
         const { deviceId, enabled, threshold } = req.body;
         
-        // Kirim status enabled/disabled ke ESP
+        // Update local state first
+        const updatedStatus = mqttService.updateClapStatus(
+            enabled, 
+            deviceId, 
+            threshold
+        );
+        
+        // Prepare payload for ESP
         const clapSettingPayload = {
             enabled: enabled,
             deviceId: deviceId !== undefined ? parseInt(deviceId) : 0
         };
         
+        // Send commands to ESP
         mqttService.publishCommand('smarthome/clap_setting', clapSettingPayload);
 
-        // Kirim threshold jika ada
         if (threshold !== undefined) {
             mqttService.publishCommand('smarthome/sound_threshold', {
                 threshold: parseInt(threshold)
             });
         }
 
-        res.json({ success: true });
+        res.json({ 
+            success: true, 
+            ...updatedStatus 
+        });
     } catch (error) {
         console.error('Error updating clap settings:', error);
-        res.status(500).json({ error: 'Failed to update clap settings' });
+        res.status(500).json({ 
+            error: 'Failed to update clap settings',
+            details: error.message 
+        });
     }
 });
 
 // Tambahkan route baru untuk get clap settings
 router.get('/clap-settings', async (req, res) => {
     try {
-        // Ambil status dari ESP melalui MQTT
         const status = await mqttService.requestClapStatus();
         res.json(status);
     } catch (error) {
         console.error('Error getting clap settings:', error);
-        res.status(500).json({ error: 'Failed to get clap settings' });
+        res.json({ enabled: false });
     }
 });
 
@@ -62,5 +74,9 @@ router.post('/schedules', scheduleController.addSchedule);
 router.delete('/schedules/:id', scheduleController.deleteSchedule);
 router.get('/schedules/:id', scheduleController.getScheduleById);
 router.put('/schedules/:id', scheduleController.updateSchedule);
+
+// Add this route before module.exports
+router.get('/devices/:id', deviceController.getDeviceById);
+router.put('/devices/:id', deviceController.updateDevice);
 
 module.exports = router;

@@ -261,4 +261,75 @@ const deleteSchedule = async (req, res) => {
     }
 };
 
-module.exports = { getDevices, addDevice, updateDeviceStatus, deleteDevice, moveDevice, getSchedules, addSchedule, deleteSchedule };
+const getDeviceById = async (req, res) => {
+    const deviceId = req.params.id;
+
+    try {
+        const [device] = await db.query(`
+            SELECT d.*, g.name as group_name
+            FROM devices d
+            LEFT JOIN device_groups g ON d.group_id = g.id
+            WHERE d.id = ?
+        `, [deviceId]);
+
+        if (device.length === 0) {
+            return res.status(404).json({ error: 'Device not found' });
+        }
+
+        res.json(device[0]);
+    } catch (err) {
+        console.error('Error getting device:', err);
+        res.status(500).json({ error: 'Database error: ' + err.message });
+    }
+};
+
+const updateDevice = async (req, res) => {
+    const deviceId = req.params.id;
+    const { name, relay_number, group_id } = req.body;
+
+    try {
+        // Validate input
+        if (!name || !relay_number) {
+            return res.status(400).json({ 
+                error: 'Name and relay number are required' 
+            });
+        }
+
+        // Check if relay number is already used by another device
+        const [existing] = await db.query(
+            'SELECT id FROM devices WHERE relay_number = ? AND id != ?',
+            [relay_number, deviceId]
+        );
+
+        if (existing.length > 0) {
+            return res.status(400).json({ 
+                error: 'Relay number is already in use by another device' 
+            });
+        }
+
+        // Update device
+        const [result] = await db.query(
+            'UPDATE devices SET name = ?, relay_number = ?, group_id = ? WHERE id = ?',
+            [name, relay_number, group_id || null, deviceId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Device not found' });
+        }
+
+        // Get updated device data
+        const [updatedDevice] = await db.query(`
+            SELECT d.*, g.name as group_name
+            FROM devices d
+            LEFT JOIN device_groups g ON d.group_id = g.id
+            WHERE d.id = ?
+        `, [deviceId]);
+
+        res.json(updatedDevice[0]);
+    } catch (err) {
+        console.error('Error updating device:', err);
+        res.status(500).json({ error: 'Database error: ' + err.message });
+    }
+};
+
+module.exports = { getDevices, addDevice, updateDeviceStatus, deleteDevice, moveDevice, getSchedules, addSchedule, deleteSchedule, getDeviceById, updateDevice };
