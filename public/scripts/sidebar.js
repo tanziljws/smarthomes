@@ -1,7 +1,7 @@
 class Sidebar {
     constructor() {
         this.sidebar = document.querySelector('.sidebar');
-        this.menuToggle = document.querySelector('.menu-toggle');
+        this.menuToggle = document.querySelector('.burger-menu');
         this.menuItems = document.querySelectorAll('.sidebar a');
         this.overlay = document.createElement('div');
         

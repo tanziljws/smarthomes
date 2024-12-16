@@ -5,56 +5,57 @@ class VoiceStreamer {
         this.mediaStream = null;
         this.websocket = null;
         this.audioContext = null;
-        this.bufferSize = 512;
+        this.bufferSize = 512; // Buffer sedikit lebih besar
+        this.sendTimestamp = 0;
+        this.receiveTimestamp = 0;
+        this._lastUpdateTime = 0;
+
+        // Mobile panel handling
+        this.initializeMobilePanel();
+    }
+
+    initializeMobilePanel() {
+        const voiceBtn = document.querySelector('.btn-voice-stream');
+        const mobilePanel = document.querySelector('.voice-stream-mobile');
+        const closeBtn = document.getElementById('closeVoicePanel');
+
+        if (window.innerWidth <= 768) {
+            voiceBtn?.addEventListener('click', () => {
+                mobilePanel?.classList.add('show');
+            });
+
+            closeBtn?.addEventListener('click', () => {
+                mobilePanel?.classList.remove('show');
+            });
+        }
     }
 
     async startStreaming() {
         try {
-            // Cek permissions dulu
-            const permissions = await navigator.permissions.query({ name: 'microphone' });
-            console.log('Microphone permission status:', permissions.state);
-            
-            if (permissions.state === 'denied') {
-                throw new Error('Microphone permission denied');
-            }
-            
-            // Cek dukungan getUserMedia
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                throw new Error('Browser tidak mendukung audio capture');
-            }
-
-            // Request permission dengan explicit constraints
-            this.mediaStream = await navigator.mediaDevices.getUserMedia({
-                audio: {
-                    echoCancellation: false,
-                    noiseSuppression: false,
-                    autoGainControl: false,
-                    channelCount: 1,
-                    sampleRate: 44100,
-                    latency: 0.01
-                },
-                video: false // pastikan video dimatikan
+            this.audioContext = new AudioContext({ 
+                latencyHint: 'interactive', 
+                sampleRate: 44100 
             });
 
-            // Setup Web Audio API dengan latency rendah
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
-                latencyHint: 'interactive',
-                sampleRate: 44100
+            // Mendapatkan izin mikrofon
+            this.mediaStream = await navigator.mediaDevices.getUserMedia({
+                audio: { sampleRate: 44100, latency: 0.01 }, 
+                video: false 
             });
 
             const source = this.audioContext.createMediaStreamSource(this.mediaStream);
             const processor = this.audioContext.createScriptProcessor(this.bufferSize, 1, 1);
 
-            // Optimize audio processing
             source.connect(processor);
             processor.connect(this.audioContext.destination);
 
-            // Setup WebSocket dengan binary type
+            // Inisialisasi WebSocket
             this.websocket = new WebSocket(`ws://${this.serverUrl}:8081/stream`);
             this.websocket.binaryType = 'arraybuffer';
 
+            // Memeriksa status koneksi WebSocket
             this.websocket.onopen = () => {
-                console.log('WebSocket connected to:', this.serverUrl);
+                console.log("WebSocket connected");
                 this.isStreaming = true;
                 this.updateUI(true);
             };
@@ -62,47 +63,42 @@ class VoiceStreamer {
             this.websocket.onerror = (error) => {
                 console.error('WebSocket error:', error);
                 this.stopStreaming();
-                showError('Connection error');
-            };
-
-            this.websocket.onmessage = (event) => {
-                console.log('Received message from server:', event.data);
+                showError('WebSocket connection error');
             };
 
             this.websocket.onclose = () => {
-                console.log('WebSocket connection closed');
+                console.log('WebSocket closed');
                 this.stopStreaming();
             };
 
             processor.onaudioprocess = (e) => {
-                if (this.isStreaming && this.websocket.readyState === WebSocket.OPEN) {
+                if (this.websocket.readyState === WebSocket.OPEN) {
                     const inputData = e.inputBuffer.getChannelData(0);
-                    const pcmData = new Int16Array(inputData.length);
-                    
-                    // Optimize conversion
-                    for (let i = 0; i < inputData.length; i++) {
-                        pcmData[i] = Math.max(-32768, Math.min(32767, inputData[i] * 32768));
-                    }
+                    const pcmData = Int16Array.from(inputData, val => val * 32767);
 
-                    // Send immediately
-                    if (this.websocket.bufferedAmount < 8192) { // Check buffer state
-                        this.websocket.send(pcmData.buffer);
-                    }
+                    // Mengukur waktu pengiriman
+                    this.sendTimestamp = performance.now();
+                    this.websocket.send(pcmData.buffer);
+
+                    // Logging waktu pengiriman
+                    console.log(`Sent data at: ${this.sendTimestamp}`);
                 }
+            };
+
+            // Listening untuk data yang diterima dari server dan hitung latensinya
+            this.websocket.onmessage = (event) => {
+                this.receiveTimestamp = performance.now();
+                const latency = this.receiveTimestamp - this.sendTimestamp;
+                console.log(`Round-trip latency: ${latency.toFixed(2)}ms`);
+
+                // Menampilkan latensi di UI jika diinginkan
+                this.updateLatencyUI(latency);
             };
 
         } catch (error) {
             console.error('Error starting voice stream:', error);
             this.stopStreaming();
-            
-            // Tampilkan pesan error yang lebih spesifik
-            if (error.name === 'NotFoundError') {
-                showError('Mikrofon tidak ditemukan. Pastikan mikrofon terhubung dan izinkan akses.');
-            } else if (error.name === 'NotAllowedError') {
-                showError('Akses mikrofon ditolak. Mohon izinkan akses mikrofon di pengaturan browser.');
-            } else {
-                showError(`Failed to start voice stream: ${error.message}`);
-            }
+            showError(`Failed to start voice stream: ${error.message}`);
         }
     }
 
@@ -127,35 +123,53 @@ class VoiceStreamer {
     }
 
     updateUI(isStreaming) {
-        const button = document.getElementById('voiceStreamBtn');
+        const button = document.querySelector('.btn-voice-stream');
+        const statusPill = document.querySelector('.voice-status-pill');
+        
         if (button) {
             button.classList.toggle('active', isStreaming);
-            button.innerHTML = `
-                <i class="material-icons">mic</i>
-                VOICE STREAM: ${isStreaming ? 'ON' : 'OFF'}
-            `;
-            button.style.background = isStreaming ? 
-                'linear-gradient(135deg, #4CAF50, #45a049)' : 
-                'linear-gradient(135deg, #FF4081, #E91E63)';
+            
+            if (statusPill) {
+                statusPill.textContent = `VOICE: ${isStreaming ? 'ON' : 'OFF'}`;
+                statusPill.classList.add('show');
+                setTimeout(() => statusPill.classList.remove('show'), 1500);
+            }
+        }
+    }
+
+    updateLatencyUI(latency) {
+        const latencyElement = document.getElementById('latencyDisplay');
+        if (latencyElement) {
+            latencyElement.textContent = `Latency: ${latency.toFixed(2)} ms`;
+        }
+    }
+
+    updateStatusDot(isStreaming) {
+        const button = document.querySelector('.btn-voice-stream');
+        if (button) {
+            if (isStreaming) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
         }
     }
 }
 
-// Helper function untuk menampilkan error
+// Fungsi bantu untuk menampilkan error
 function showError(message) {
     console.error(message);
-    // Implementasikan UI untuk menampilkan error ke user
     alert(message);
 }
 
-// Initialize voice streamer
+// Inisialisasi voice streamer
 const voiceStreamer = new VoiceStreamer('192.168.2.90');
 
-// Add event listener to button
+// Tambahkan event listener ke tombol
 document.getElementById('voiceStreamBtn')?.addEventListener('click', () => {
     if (!voiceStreamer.isStreaming) {
         voiceStreamer.startStreaming();
     } else {
         voiceStreamer.stopStreaming();
     }
-}); 
+});

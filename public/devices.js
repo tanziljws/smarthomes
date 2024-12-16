@@ -648,73 +648,7 @@ function toggleSidebar() {
         }
     }
 }
-
 // Add CSS styles dynamically
-const style = document.createElement('style');
-style.textContent = `
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100vh;
-        width: 250px;
-        background-color: #1a1a1a;
-        color: white;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 1000;
-        visibility: hidden;
-    }
-
-    .sidebar.show {
-        transform: translateX(0);
-        visibility: visible;
-    }
-
-    .sidebar .logo {
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .sidebar .logo h2 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    .sidebar nav {
-        padding: 20px 0;
-    }
-
-    .sidebar nav a {
-        display: flex;
-        align-items: center;
-        padding: 15px 20px;
-        color: white;
-        text-decoration: none;
-        gap: 10px;
-        transition: background-color 0.3s;
-    }
-
-    .sidebar nav a:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar nav a.active {
-        background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .sidebar nav a span {
-        font-size: 1.1rem;
-    }
-
-    .sidebar nav a .material-icons {
-        font-size: 24px;
-    }
-`;
-document.head.appendChild(style);
-
 // Tambahkan event listener untuk menu button
 document.addEventListener('DOMContentLoaded', () => {
     const menuBtn = document.querySelector('.menu-btn');

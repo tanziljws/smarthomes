@@ -7,22 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = {
         async fetchGroups() {
             try {
-                document.querySelector('.cctv-header').innerHTML = `
-                    <div class="header-left">
-                        <h1>CCTV Management</h1>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn-select" onclick="app.toggleSelectMode()">
-                            <span class="material-icons">checklist</span>
-                            Select
-                        </button>
-                        <button class="btn-add-group" onclick="app.openAddGroupModal()">
-                            <span class="material-icons">add</span>
-                            Add Group
-                        </button>
-                    </div>
-                `;
-
                 const response = await fetch('/cctv/groups');
                 const groups = await response.json();
                 this.renderGroups(groups);
@@ -34,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleSelectMode() {
             this.isSelectMode = !this.isSelectMode;
             const headerActions = document.querySelector('.header-actions');
-
+            
             if (this.isSelectMode) {
                 headerActions.innerHTML = `
                     <div class="selection-actions">
@@ -53,20 +37,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         </button>
                     </div>
                 `;
-
-                document.querySelectorAll('.cctv-group-card').forEach(card => {
-                    card.classList.add('selectable');
-                    card.insertAdjacentHTML('afterbegin', `
-                        <div class="select-checkbox">
-                            <input type="checkbox"
-                                   data-group-id="${card.dataset.groupId}"
-                                   onchange="app.updateSelectionCounter()"
-                                   onclick="event.stopPropagation()">
-                        </div>
-                    `);
-                });
             } else {
-                this.fetchGroups();
+                headerActions.innerHTML = `
+                    <button class="btn-select" onclick="app.toggleSelectMode()">
+                        <span class="material-icons">checklist</span>
+                        Select
+                    </button>
+                    <button class="btn-add-group" onclick="app.openAddGroupModal()">
+                        <span class="material-icons">add</span>
+                        Add Group
+                    </button>
+                `;
             }
         },
 
@@ -423,21 +404,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
             const mainContent = document.querySelector('.main-content');
             
             if (sidebar) {
-                sidebar.classList.toggle('show');
+                sidebar.classList.toggle('open');
+                if (overlay) overlay.classList.toggle('active');
                 
-                if (sidebar.classList.contains('show')) {
-                    sidebar.style.transform = 'translateX(0)';
-                    sidebar.style.visibility = 'visible';
-                } else {
-                    sidebar.style.transform = 'translateX(-100%)';
-                    setTimeout(() => {
-                        if (!sidebar.classList.contains('show')) {
-                            sidebar.style.visibility = 'hidden';
-                        }
-                    }, 300);
+                // For mobile only
+                if (window.innerWidth <= 768) {
+                    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
                 }
             }
         },
@@ -571,320 +547,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.app = app;
     app.init();
-});
 
-// Tambahkan styles
-const style = document.createElement('style');
-style.textContent = `
-    .stream-expanded {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.9);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-    }
-
-    .expanded-content {
-        background: #1e1e1e;
-        border-radius: 8px;
-        overflow: hidden;
-        width: 90%;
-        max-width: 1200px;
-    }
-
-    .expanded-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 20px;
-        background: #2a2a2a;
-    }
-
-    .expanded-stream {
-        padding: 20px;
-    }
-
-    .expanded-stream img {
-        width: auto;
-        height: auto;
-        max-width: 100%;
-        max-height: calc(90vh - 100px);
-        display: block;
-        margin: 0 auto;
-    }
-
-    .stream-wrapper {
-        cursor: pointer;
-        transition: transform 0.2s ease;
-    }
-
-    .stream-wrapper:hover {
-        transform: scale(1.02);
-    }
-
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100vh;
-        width: 250px;
-        background-color: #1a1a1a;
-        color: white;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 1000;
-        visibility: hidden;
-    }
-
-    .sidebar.show {
-        transform: translateX(0);
-        visibility: visible;
-    }
-
-    .sidebar .logo {
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .sidebar .logo h2 {
-        margin: 0;
-        font-size: 1.5rem;
-    }
-
-    .sidebar nav {
-        padding: 20px 0;
-    }
-
-    .sidebar nav a {
-        display: flex;
-        align-items: center;
-        padding: 15px 20px;
-        color: white;
-        text-decoration: none;
-        gap: 10px;
-        transition: background-color 0.3s;
-    }
-
-    .sidebar nav a:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar nav a.active {
-        background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .sidebar nav a span {
-        font-size: 1.1rem;
-    }
-
-    .sidebar nav a .material-icons {
-        font-size: 24px;
-    }
-
-    /* Tambahan style untuk halaman CCTV */
-    .cctv-container {
-        padding: 20px;
-        margin-left: 0;
-        transition: margin-left 0.3s ease;
-    }
-
-    .cctv-container.shifted {
-        margin-left: 250px;
-    }
-
-    .menu-btn {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 1001;
-        background: none;
-        border: none;
-        color: white;
-        cursor: pointer;
-        padding: 10px;
-    }
-
-    .menu-btn:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-    }
-`;
-
-document.head.appendChild(style);
-
-// Pastikan script dijalankan setelah DOM loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded');
-    initializeEventListeners();
-});
-
-function initializeEventListeners() {
-    console.log('DOM loaded');
-
-    // Event listener untuk tombol edit di toolbar
-    const editBtn = document.querySelector('button[data-action="edit"]');
-    if (editBtn) {
-        editBtn.addEventListener('click', handleEditClick);
-        console.log('Edit button listener attached');
-    }
-
-    // Event listener untuk seleksi CCTV
-    document.addEventListener('click', (e) => {
-        const cctvItem = e.target.closest('.cctv-item');
-        if (cctvItem) {
-            // Remove selection from other items
-            document.querySelectorAll('.cctv-item.selected').forEach(item => {
-                if (item !== cctvItem) {
-                    item.classList.remove('selected');
-                }
-            });
-            cctvItem.classList.toggle('selected');
-            console.log('CCTV item selected');
-        }
-    });
-
-    // Event listener untuk form edit
-    const editForm = document.getElementById('editCctvForm');
-    if (editForm) {
-        editForm.addEventListener('submit', handleEditSubmit);
-        console.log('Edit form listener attached');
-    }
-}
-
-function handleEditClick(e) {
-    e.preventDefault();
-    console.log('Edit button clicked');
-
-    const selectedItem = document.querySelector('.cctv-item.selected');
-    if (!selectedItem) {
-        alert('Please select a CCTV first');
-        return;
-    }
-
-    const groupName = selectedItem.querySelector('.cctv-name').textContent;
-    document.getElementById('editGroupName').value = groupName;
-
-    const modal = document.getElementById('editCctvModal');
-    modal.style.display = 'block';
-}
-
-async function handleEditSubmit(e) {
-    e.preventDefault();
-    console.log('Form submitted');
-
-    const selectedItem = document.querySelector('.cctv-item.selected');
-    const newGroupName = document.getElementById('editGroupName').value;
-
-    try {
-        const response = await fetch(`/api/cctv/${selectedItem.dataset.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name: newGroupName
-            })
+    // Add burger menu listener
+    const burgerMenu = document.querySelector('.burger-menu');
+    if (burgerMenu) {
+        burgerMenu.addEventListener('click', () => {
+            app.toggleSidebar();
         });
-
-        if (response.ok) {
-            selectedItem.querySelector('.cctv-name').textContent = newGroupName;
-            closeEditModal();
-            console.log('CCTV updated successfully');
-        } else {
-            throw new Error('Failed to update CCTV');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to update CCTV');
     }
-}
-
-function closeEditModal() {
-    const modal = document.getElementById('editCctvModal');
-    modal.style.display = 'none';
-}
-
-// Fungsi sederhana untuk edit
-function editCctv() {
-    console.log('Edit button clicked!');
-
-    // Cek item yang dipilih
-    const selectedItem = document.querySelector('.cctv-item.selected');
-    if (!selectedItem) {
-        alert('Pilih CCTV dulu!');
-        return;
-    }
-
-    // Ambil data
-    const groupName = selectedItem.querySelector('.cctv-name').textContent;
-
-    // Tampilkan modal
-    const modal = document.getElementById('editCctvModal');
-    const input = document.getElementById('editGroupName');
-
-    if (modal && input) {
-        input.value = groupName;
-        modal.style.display = 'block';
-    } else {
-        alert('Error: Modal atau input tidak ditemukan!');
-    }
-}
-
-// Fungsi untuk menutup modal
-function closeEditModal() {
-    const modal = document.getElementById('editCctvModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// Fungsi untuk handle submit form
-function saveEdit(event) {
-    event.preventDefault();
-
-    const newName = document.getElementById('editGroupName').value;
-    const selectedItem = document.querySelector('.cctv-item.selected');
-
-    if (selectedItem && newName) {
-        selectedItem.querySelector('.cctv-name').textContent = newName;
-        closeEditModal();
-    }
-}
-
-// Tambahkan event listener untuk form edit
-document.getElementById('editGroupForm')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const groupId = document.getElementById('editGroupModal').dataset.groupId;
-    const newName = document.getElementById('editGroupName').value;
-
-    try {
-        const response = await fetch(`/cctv/groups/${groupId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name: newName })
+    
+    // Add overlay listener
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            app.toggleSidebar();
         });
-
-        if (!response.ok) {
-            throw new Error('Failed to update group');
-        }
-
-        // Tutup modal dan refresh data
-        document.getElementById('editGroupModal').style.display = 'none';
-        await app.fetchGroups();
-        app.toggleSelectMode();
-    } catch (error) {
-        console.error('Error updating group:', error);
-        alert('Gagal mengupdate grup');
     }
 });
 
