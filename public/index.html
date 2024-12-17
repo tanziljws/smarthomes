@@ -20,37 +20,40 @@
   <link rel="icon" type="image/x-icon" href="data:image/x-icon;,">
 </head>
 <body>
-  <button class="menu-toggle">
-    <span class="material-icons">menu</span>
-  </button>
-  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <div class="container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
-        <div class="logo">
-            <span class="material-icons">home</span>
-            <h2>SmartHome</h2>
-        </div>
-        <nav>
-            <a href="index.html" class="active">
-                <span class="material-icons">dashboard</span>
-                <span>Dashboard</span>
-            </a>
-            <a href="cctv.html">
-                <span class="material-icons">videocam</span>
-                <span>CCTV</span>
-            </a>
-            <a href="devices.html">
-                <span class="material-icons">devices</span>
-                <span>Devices</span>
-            </a>
-            <a href="#" id="showSettings">
-                <span class="material-icons">settings</span>
-                <span>Settings</span>
-            </a>
-        </nav>
-    </aside>
-
+    <button class="burger-menu" onclick="toggleSidebar()">
+        <span class="material-icons">menu</span>
+    </button>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="material-icons">home</span>
+                <h2>SmartHome</h2>
+            </div>
+            <nav>
+                <a href="index.html" class="active">
+                    <span class="material-icons">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="cctv.html">
+                    <span class="material-icons">videocam</span>
+                    <span>CCTV</span>
+                </a>
+                <a href="devices.html">
+                    <span class="material-icons">devices</span>
+                    <span>Devices</span>
+                </a>
+                <a href="#">
+                    <span class="material-icons">analytics</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="#">
+                    <span class="material-icons">settings</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
     <main class="main-content">
       <header>
         <h1>Hey, User! Welcome to your Smart Home Dashboard</h1>
@@ -67,8 +70,8 @@
 
       <div class="dashboard-grid">
           <!-- Temperature Gauge -->
-          <div class="metric-card" data-gauge-type="temperature" 
-               data-min="0" data-max="50" 
+          <div class="metric-card" data-gauge-type="temperature"
+               data-min="0" data-max="50"
                data-start-angle="-150" data-end-angle="150">
               <div class="metric-header">
                   <h3>Temperature</h3>
@@ -162,64 +165,6 @@
           </div>
       </div>
 
-      <div class="weather-monitoring">
-          <h2>
-              <span class="material-icons">cloud</span>
-              Weather Monitoring
-          </h2>
-
-          <div class="weather-controls">
-              <select id="locationSelect">
-                  <option value="32.71.01.1003">Empang</option>
-                  <option value="501397">Bandung</option>
-                  <option value="501195">Jakarta</option>
-              </select>
-              <button id="refreshWeather">
-                  <span class="material-icons">refresh</span>
-              </button>
-          </div>
-
-          <div class="weather-main">
-              <span class="material-icons" id="weatherIcon">wb_sunny</span>
-              <div class="weather-primary">
-                  <span id="weatherTemp">--°C</span>
-                  <div id="weatherDesc">Loading...</div>
-                  <div id="weatherLocation">Pilih Lokasi</div>
-                  <div id="weatherTime">--:--</div>
-              </div>
-          </div>
-
-          <div class="weather-details">
-              <div class="detail-item">
-                  <span class="material-icons">opacity</span>
-                  <span>Kelembapan</span>
-                  <span id="weatherHumidity">--%</span>
-              </div>
-
-              <div class="detail-item">
-                  <span class="material-icons">air</span>
-                  <span>Kecepatan Angin</span>
-                  <span id="weatherWindSpeed">-- km/h</span>
-                  <div class="wind-direction">
-                      <span class="material-icons">navigation</span>
-                      <span id="weatherWindDir">--</span>
-                  </div>
-              </div>
-
-              <div class="detail-item">
-                  <span class="material-icons">visibility</span>
-                  <span>Jarak Pandang</span>
-                  <span id="weatherVisibility">-- km</span>
-              </div>
-
-              <div class="detail-item">
-                  <span class="material-icons">cloud</span>
-                  <span>Tutupan Awan</span>
-                  <span id="weatherCloud">--%</span>
-              </div>
-          </div>
-      </div>
-
       <section id="devices-list" class="device-list">
         <!-- Device cards will be rendered here -->
 
@@ -261,11 +206,11 @@
   <script src="components/notifications.js"></script>
   <script src="components/settings.js"></script>
   <script src="scripts/sidebar.js"></script>
-  <script src="script.js"></script>
+  <script src="scripts/script.js"></script>
   <script>
     // Initialize notification manager
     const notificationManager = new NotificationManager();
-    
+
     // Update clear notifications button
     document.querySelector('.notifications-header button').onclick = () => {
         notificationManager.clearAllNotifications();

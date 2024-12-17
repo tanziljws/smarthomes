@@ -272,12 +272,12 @@
                         <!-- Devices will be loaded here -->
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="editScheduleTime">Time:</label>
                     <input type="time" id="editScheduleTime" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="editScheduleAction">Action:</label>
                     <select id="editScheduleAction" required>
@@ -285,7 +285,7 @@
                         <option value="OFF">OFF</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Days:</label>
                     <div class="days-checkboxes">
@@ -298,7 +298,7 @@
                         <label><input type="checkbox" name="editDays" value="6"> Sat</label>
                     </div>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="submit" class="btn-save">Save Changes</button>
                     <button type="button" class="btn-cancel" onclick="hideModal('editScheduleModal')">Cancel</button>
@@ -335,12 +335,12 @@
                 </div>
                 <div class="form-group">
                     <label for="soundThreshold">Sound Threshold (0-1024):</label>
-                    <input type="number" id="soundThreshold" name="soundThreshold" 
+                    <input type="number" id="soundThreshold" name="soundThreshold"
                            min="0" max="1024" value="600" required>
                 </div>
                 <div class="modal-actions">
                     <button type="submit" class="btn-primary">Save Settings</button>
-                    <button type="button" onclick="hideModal('clapSettingsModal')" 
+                    <button type="button" onclick="hideModal('clapSettingsModal')"
                             class="btn-secondary">Cancel</button>
                 </div>
             </form>
@@ -372,8 +372,8 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="devices.js"></script>
+    <script src="scripts/devices.js"></script>
     <script src="scripts/sidebar.js"></script>
-    <script src="voiceStream.js"></script>
+    <script src="scripts/voiceStream.js"></script>
 </body>
 </html>

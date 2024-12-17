@@ -63,7 +63,7 @@ mqttService.client.on('message', (topic, message) => {
             console.log('Sending relay status:', status);
             io.emit('relayStatus', status);
             io.emit('deviceStatusUpdate', status);
-        } 
+        }
         else if (topic === 'smarthome/dht') {
             // Handle DHT sensor data (JSON messages)
             const data = JSON.parse(message.toString());

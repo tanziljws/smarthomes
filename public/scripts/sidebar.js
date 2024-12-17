@@ -4,15 +4,15 @@ class Sidebar {
         this.menuToggle = document.querySelector('.burger-menu');
         this.menuItems = document.querySelectorAll('.sidebar a');
         this.overlay = document.createElement('div');
-        
+
         if (!this.sidebar || !this.menuToggle) {
             console.error('Required elements not found');
             return;
         }
-        
+
         this.overlay.className = 'sidebar-overlay';
         document.body.appendChild(this.overlay);
-        
+
         this.initialize();
     }
 
@@ -22,10 +22,10 @@ class Sidebar {
             e.preventDefault();
             this.toggleSidebar();
         });
-        
+
         // Overlay click handler
         this.overlay.addEventListener('click', () => this.closeSidebar());
-        
+
         // Menu items click handler
         this.menuItems.forEach(item => {
             item.addEventListener('click', () => this.closeSidebar());
@@ -39,7 +39,7 @@ class Sidebar {
 
     toggleSidebar() {
         if (!this.sidebar) return;
-        
+
         const isOpen = this.sidebar.classList.contains('open');
         if (isOpen) {
             this.closeSidebar();

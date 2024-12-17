@@ -15,10 +15,10 @@
     <link rel="stylesheet" href="styles/components/cctv.css">
 </head>
 <body>
-    <button class="burger-menu">
+    <button class="burger-menu" onclick="toggleSidebar()">
         <span class="material-icons">menu</span>
     </button>
-    <div class="sidebar-overlay"></div>
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <div class="container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -222,9 +222,9 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="cctv.js"></script>
+    <script src="scripts/cctv.js"></script>
     <script src="scripts/sidebar.js"></script>
-    <script src="voiceStream.js"></script>
+    <script src="scripts/voiceStream.js"></script>
 
     <!-- Voice Stream Floating Button -->
     <div class="voice-stream-container">
@@ -242,16 +242,16 @@
           <i class="material-icons">close</i>
         </button>
       </div>
-      
+
       <div class="voice-stream-mobile-content">
         <div class="stream-status">Waiting to start...</div>
-        
+
         <div class="stream-controls">
           <button class="btn-stream-control" id="mobileMicButton">
             <i class="material-icons">mic</i>
           </button>
         </div>
-        
+
         <div class="latency-display">
           Latency: -- ms
         </div>

@@ -78,11 +78,11 @@
     .sidebar {
         transform: translateX(-100%);
     }
-    
+
     .sidebar.open {
         transform: translateX(0);
     }
-    
+
     .burger-menu {
         display: block;
         position: fixed;
@@ -95,11 +95,11 @@
         cursor: pointer;
         padding: 10px;
     }
-    
+
     .sidebar-overlay.active {
         display: block;
     }
-    
+
     .main-content {
         margin-left: 0;
     }

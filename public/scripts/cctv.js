@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleSelectMode() {
             this.isSelectMode = !this.isSelectMode;
             const headerActions = document.querySelector('.header-actions');
-            
+
             if (this.isSelectMode) {
                 headerActions.innerHTML = `
                     <div class="selection-actions">
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const data = await response.json();
-                
+
                 const viewModal = document.getElementById('viewCctvModal');
                 viewModal.innerHTML = `
                     <div class="modal-content">
@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </button>
                         </div>
                         <div class="cctv-streams">
-                            ${data.cctvs && data.cctvs.length > 0 ? 
+                            ${data.cctvs && data.cctvs.length > 0 ?
                                 data.cctvs.map(cctv => `
                                     <div class="cctv-stream-container">
                                         <div class="stream-header">${cctv.name}</div>
@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                             <span class="material-icons">delete</span>
                                         </button>
                                     </div>
-                                `).join('') : 
+                                `).join('') :
                                 '<div class="no-cctv">No CCTVs in this group</div>'
                             }
                         </div>
@@ -406,11 +406,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
             const mainContent = document.querySelector('.main-content');
-            
+
             if (sidebar) {
                 sidebar.classList.toggle('open');
                 if (overlay) overlay.classList.toggle('active');
-                
+
                 // For mobile only
                 if (window.innerWidth <= 768) {
                     document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.getElementById('addCctvForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+
                 const modal = document.getElementById('addCctvModal');
                 const groupId = modal.dataset.groupId;
                 const cctvName = document.getElementById('cctvName').value.trim();
@@ -505,18 +505,6 @@ document.addEventListener('DOMContentLoaded', () => {
             this.setupTabs();
             this.fetchGroups();
 
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', (e) => {
-                const sidebar = document.querySelector('.sidebar');
-                const burgerMenu = document.querySelector('.burger-menu');
-                if (window.innerWidth <= 768 &&
-                    sidebar.classList.contains('active') &&
-                    !sidebar.contains(e.target) &&
-                    !burgerMenu.contains(e.target)) {
-                    this.toggleSidebar();
-                }
-            });
-
             // Handle window resize
             window.addEventListener('resize', () => {
                 if (window.innerWidth > 768) {
@@ -533,12 +521,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('No group ID provided');
                 return;
             }
-            
+
             const modal = document.getElementById('addCctvModal');
             if (modal) {
                 modal.dataset.groupId = groupId;
                 modal.style.display = 'block';
-                
+
                 // Reset form
                 document.getElementById('addCctvForm').reset();
             }
@@ -548,14 +536,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.app = app;
     app.init();
 
-    // Add burger menu listener
-    const burgerMenu = document.querySelector('.burger-menu');
-    if (burgerMenu) {
-        burgerMenu.addEventListener('click', () => {
-            app.toggleSidebar();
-        });
-    }
-    
+
+
     // Add overlay listener
     const overlay = document.querySelector('.sidebar-overlay');
     if (overlay) {
@@ -564,4 +546,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
